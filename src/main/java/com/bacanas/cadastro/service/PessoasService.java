@@ -36,8 +36,8 @@ public class PessoasService {
 
         pessoasRepository.delete(findByIdOrThrowBadException(id));
     }
-    public void replace (PessoasPutRequestsBody pessoasPutRequestsBody) {
-        Pessoas savedPessoas= findByIdOrThrowBadException(pessoasPutRequestsBody.getId());
+    public void replace (PessoasPutRequestsBody pessoasPutRequestsBody, Long id) {
+        Pessoas savedPessoas= findByIdOrThrowBadException(id);
 
         Pessoas pessoas = PessoasMapper.INSTANCE.toPessoas(pessoasPutRequestsBody);
         pessoas.setId(savedPessoas.getId());
