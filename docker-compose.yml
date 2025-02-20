@@ -1,7 +1,7 @@
 services:
   db:
     image: mysql:latest
-    container_name: mysql_container
+    container_name: db
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: 123
@@ -9,13 +9,13 @@ services:
     ports:
       - "3307:3306"
 
-  cadastro:
+  api-cadastro:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - '8080:8080'
-    container_name: api_docker_container
+    container_name: api-cadastro
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/os_bacanas
       SPRING_DATASOURCE_USERNAME: root

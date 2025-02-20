@@ -12,7 +12,5 @@ public abstract class PessoasMapper {
     public static final PessoasMapper INSTANCE = Mappers.getMapper(PessoasMapper.class);
 
     public abstract Pessoas toPessoas(PessoasPostRequestsBody pessoasPostRequestsBody);
-
     public abstract Pessoas toPessoas(PessoasPutRequestsBody pessoasPutRequestsBody);
-
 }
