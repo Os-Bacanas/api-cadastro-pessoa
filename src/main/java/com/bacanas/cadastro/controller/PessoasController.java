@@ -26,6 +26,7 @@ public class PessoasController {
 
     @GetMapping()
     public ResponseEntity<List<Pessoas>> lista() {
+
         return ResponseEntity.ok(pessoasService.listAll());
     }
     @GetMapping(path = "/{id}")
