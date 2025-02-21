@@ -1,7 +1,7 @@
 package com.bacanas.cadastro.controller;
 
 
-import com.bacanas.cadastro.domain.Users;
+import com.bacanas.cadastro.domain.User;
 import com.bacanas.cadastro.requests.UsersPostRequestsBody;
 import com.bacanas.cadastro.requests.UsersPutRequestsBody;
 import com.bacanas.cadastro.service.UsersService;
@@ -21,26 +21,22 @@ public class UsersController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<Users>> lista() {
+    public ResponseEntity<List<User>> lista() {
         return ResponseEntity.ok(usersService.listAll());
     }
 
-    @GetMapping(path = "/{id}")
-    public ResponseEntity<Users> findById(@PathVariable long id) {
-
-        return ResponseEntity.ok(usersService.findByIdOrThrowBadException(id));
-    }
+//    @GetMapping(path = "/{id}")
+//    public ResponseEntity<User> findById(@PathVariable long id) {
+//        return ResponseEntity.ok(usersService.findByIdOrThrowBadException(id));
+//    }
 
     @GetMapping(path = "/")
-    public ResponseEntity<List<Users>> findByName(@RequestParam(name = "name") String name) {
-        //localhost:8080/users/find?name
-
+    public ResponseEntity<List<User>> findByName(@RequestParam(name = "name") String name) {
         return ResponseEntity.ok(usersService.findByName(name));
     }
 
     @PostMapping
-    //ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Users> save(@RequestBody UsersPostRequestsBody usersPostRequestsBody) {
+    public ResponseEntity<User> save(@RequestBody UsersPostRequestsBody usersPostRequestsBody) {
         return new ResponseEntity<>(usersService.save(usersPostRequestsBody), HttpStatus.CREATED);
     }
 

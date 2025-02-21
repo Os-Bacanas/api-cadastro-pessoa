@@ -1,6 +1,6 @@
 package com.bacanas.cadastro.mapper;
 
-import com.bacanas.cadastro.domain.Pessoas;
+import com.bacanas.cadastro.domain.Person;
 import com.bacanas.cadastro.requests.PessoasPostRequestsBody;
 import com.bacanas.cadastro.requests.PessoasPutRequestsBody;
 import javax.annotation.processing.Generated;
@@ -8,40 +8,40 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-02-20T11:12:53-0300",
+    date = "2025-02-20T18:29:32-0300",
     comments = "version: 1.6.3, compiler: javac, environment: Java 23.0.2 (Oracle Corporation)"
 )
 @Component
 public class PessoasMapperImpl extends PessoasMapper {
 
     @Override
-    public Pessoas toPessoas(PessoasPostRequestsBody pessoasPostRequestsBody) {
+    public Person toPessoas(PessoasPostRequestsBody pessoasPostRequestsBody) {
         if ( pessoasPostRequestsBody == null ) {
             return null;
         }
 
-        Pessoas pessoas = new Pessoas();
+        Person person = new Person();
 
-        pessoas.setName( pessoasPostRequestsBody.getName() );
-        pessoas.setEmail( pessoasPostRequestsBody.getEmail() );
-        pessoas.setCpf( pessoasPostRequestsBody.getCpf() );
+        person.setName( pessoasPostRequestsBody.getName() );
+        person.setEmail( pessoasPostRequestsBody.getEmail() );
+        person.setCpf( pessoasPostRequestsBody.getCpf() );
 
-        return pessoas;
+        return person;
     }
 
     @Override
-    public Pessoas toPessoas(PessoasPutRequestsBody pessoasPutRequestsBody) {
+    public Person toPessoas(PessoasPutRequestsBody pessoasPutRequestsBody) {
         if ( pessoasPutRequestsBody == null ) {
             return null;
         }
 
-        Pessoas pessoas = new Pessoas();
+        Person person = new Person();
 
-        pessoas.setId( pessoasPutRequestsBody.getId() );
-        pessoas.setName( pessoasPutRequestsBody.getName() );
-        pessoas.setEmail( pessoasPutRequestsBody.getEmail() );
-        pessoas.setCpf( pessoasPutRequestsBody.getCpf() );
+        person.setId( pessoasPutRequestsBody.getId() );
+        person.setName( pessoasPutRequestsBody.getName() );
+        person.setEmail( pessoasPutRequestsBody.getEmail() );
+        person.setCpf( pessoasPutRequestsBody.getCpf() );
 
-        return pessoas;
+        return person;
     }
 }

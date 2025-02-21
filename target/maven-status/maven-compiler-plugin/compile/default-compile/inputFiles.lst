@@ -1,8 +1,10 @@
 C:\Users\diego\OneDrive\Desktop\GitHub\api\src\main\java\com\bacanas\cadastro\CadastroApplication.java
 C:\Users\diego\OneDrive\Desktop\GitHub\api\src\main\java\com\bacanas\cadastro\controller\PessoasController.java
 C:\Users\diego\OneDrive\Desktop\GitHub\api\src\main\java\com\bacanas\cadastro\controller\UsersController.java
-C:\Users\diego\OneDrive\Desktop\GitHub\api\src\main\java\com\bacanas\cadastro\domain\Pessoas.java
-C:\Users\diego\OneDrive\Desktop\GitHub\api\src\main\java\com\bacanas\cadastro\domain\Users.java
+C:\Users\diego\OneDrive\Desktop\GitHub\api\src\main\java\com\bacanas\cadastro\domain\Person.java
+C:\Users\diego\OneDrive\Desktop\GitHub\api\src\main\java\com\bacanas\cadastro\domain\Phone.java
+C:\Users\diego\OneDrive\Desktop\GitHub\api\src\main\java\com\bacanas\cadastro\domain\TypePhone.java
+C:\Users\diego\OneDrive\Desktop\GitHub\api\src\main\java\com\bacanas\cadastro\domain\User.java
 C:\Users\diego\OneDrive\Desktop\GitHub\api\src\main\java\com\bacanas\cadastro\exceptions\BadRequestException.java
 C:\Users\diego\OneDrive\Desktop\GitHub\api\src\main\java\com\bacanas\cadastro\mapper\PessoasMapper.java
 C:\Users\diego\OneDrive\Desktop\GitHub\api\src\main\java\com\bacanas\cadastro\mapper\UsersMapper.java

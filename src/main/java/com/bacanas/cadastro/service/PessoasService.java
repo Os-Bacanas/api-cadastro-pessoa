@@ -1,6 +1,6 @@
 package com.bacanas.cadastro.service;
 
-import com.bacanas.cadastro.domain.Pessoas;
+import com.bacanas.cadastro.domain.Person;
 import com.bacanas.cadastro.exceptions.BadRequestException;
 import com.bacanas.cadastro.mapper.PessoasMapper;
 import com.bacanas.cadastro.repository.PessoasRepository;
@@ -18,41 +18,31 @@ public class PessoasService {
         this.pessoasRepository = pessoasRepository;
     }
 
-    public List<Pessoas> listAll() {
+    public List<Person> listAll() {
         return pessoasRepository.findAll();
-
     }
 
-    public List<Pessoas> findByName(String name) {
+    public List<Person> findByName(String name) {
         return pessoasRepository.findByName(name);
-
     }
 
-    public Pessoas findByIdOrThrowBadException(Long id) {
-        return pessoasRepository.findById(id).orElseThrow(() -> new BadRequestException("Users not found"));
-
+    public Person findByIdOrThrowBadException(Long id) {
+        return pessoasRepository.findById(id).orElseThrow(() -> new BadRequestException("User not found"));
     }
 
-    public Pessoas save(PessoasPostRequestsBody pessoasPostRequestsBody) {
+    public Person save(PessoasPostRequestsBody pessoasPostRequestsBody) {
         //Anime anime = Anime.builder().name(animePostRequestsBody.getName()).build();
-
         return pessoasRepository.save(PessoasMapper.INSTANCE.toPessoas(pessoasPostRequestsBody));
-
     }
 
     public void delete(Long id) {
-
         pessoasRepository.delete(findByIdOrThrowBadException(id));
     }
 
     public void replace(PessoasPutRequestsBody pessoasPutRequestsBody, Long id) {
-        Pessoas savedPessoas = findByIdOrThrowBadException(id);
-
-        Pessoas pessoas = PessoasMapper.INSTANCE.toPessoas(pessoasPutRequestsBody);
-        pessoas.setId(savedPessoas.getId());
-        pessoasRepository.save(pessoas);
-
+        Person savedPerson = findByIdOrThrowBadException(id);
+        Person person = PessoasMapper.INSTANCE.toPessoas(pessoasPutRequestsBody);
+        person.setId(savedPerson.getId());
+        pessoasRepository.save(person);
     }
-
-
 }

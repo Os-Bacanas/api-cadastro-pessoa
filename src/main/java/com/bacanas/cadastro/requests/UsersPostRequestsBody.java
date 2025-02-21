@@ -3,9 +3,9 @@ package com.bacanas.cadastro.requests;
 
 public class UsersPostRequestsBody {
     private String name;
-    private String senha;
     private String email;
     private String cpf;
+    private String senha;
 
     public String getName() {
         return name;

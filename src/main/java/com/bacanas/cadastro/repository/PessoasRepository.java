@@ -1,16 +1,16 @@
 package com.bacanas.cadastro.repository;
 
-import com.bacanas.cadastro.domain.Pessoas;
+import com.bacanas.cadastro.domain.Person;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface PessoasRepository extends JpaRepository<Pessoas, Long> {
-    List<Pessoas> findByName(String name);
+public interface PessoasRepository extends JpaRepository<Person, Long> {
+    List<Person> findByName(String name);
     String name(String name);
-    //List<Pessoas> findbyUserId(long userId);
+    //List<Person> findbyUserId(long userId);
 
-    // List<Pessoas> id(Long id);
+    // List<Person> id(Long id);
 
-    //List<Pessoas> findAllById(Long userId);
+    //List<Person> findAllById(Long userId);
 }

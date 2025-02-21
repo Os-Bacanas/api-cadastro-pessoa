@@ -1,13 +1,14 @@
 package com.bacanas.cadastro.controller;
 
 
-import com.bacanas.cadastro.domain.Pessoas;
+import com.bacanas.cadastro.domain.Person;
 import com.bacanas.cadastro.requests.PessoasPostRequestsBody;
 import com.bacanas.cadastro.requests.PessoasPutRequestsBody;
 import com.bacanas.cadastro.service.PessoasService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -20,27 +21,22 @@ public class PessoasController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<Pessoas>> lista() {
-
+    public ResponseEntity<List<Person>> lista() {
         return ResponseEntity.ok(pessoasService.listAll());
     }
 
-    @GetMapping(path = "/{id}")
-    public ResponseEntity<Pessoas> findById(@PathVariable long id) {
-
-        return ResponseEntity.ok(pessoasService.findByIdOrThrowBadException(id));
-    }
+//    @GetMapping(path = "/{id}")
+//    public ResponseEntity<Person> findById(@PathVariable long id) {
+//        return ResponseEntity.ok(pessoasService.findByIdOrThrowBadException(id));
+//    }
 
     @GetMapping(path = "/find")
-    public ResponseEntity<List<Pessoas>> findByName(@RequestParam(name = "name") String name) {
-        //localhost:8080/pessoas/find?name
-
+    public ResponseEntity<List<Person>> findByName(@RequestParam(name = "name") String name) {
         return ResponseEntity.ok(pessoasService.findByName(name));
     }
 
     @PostMapping
-    //ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Pessoas> save(@RequestBody PessoasPostRequestsBody pessoasPostRequestsBody) {
+    public ResponseEntity<Person> save(@RequestBody PessoasPostRequestsBody pessoasPostRequestsBody) {
         return new ResponseEntity<>(pessoasService.save(pessoasPostRequestsBody), HttpStatus.CREATED);
     }
 

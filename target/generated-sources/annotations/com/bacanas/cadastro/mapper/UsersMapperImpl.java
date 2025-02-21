@@ -1,6 +1,6 @@
 package com.bacanas.cadastro.mapper;
 
-import com.bacanas.cadastro.domain.Users;
+import com.bacanas.cadastro.domain.User;
 import com.bacanas.cadastro.requests.UsersPostRequestsBody;
 import com.bacanas.cadastro.requests.UsersPutRequestsBody;
 import javax.annotation.processing.Generated;
@@ -8,42 +8,40 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-02-20T11:12:53-0300",
+    date = "2025-02-20T18:29:32-0300",
     comments = "version: 1.6.3, compiler: javac, environment: Java 23.0.2 (Oracle Corporation)"
 )
 @Component
 public class UsersMapperImpl extends UsersMapper {
 
     @Override
-    public Users toUsers(UsersPostRequestsBody usersPostRequestsBody) {
+    public User toUsers(UsersPostRequestsBody usersPostRequestsBody) {
         if ( usersPostRequestsBody == null ) {
             return null;
         }
 
-        Users users = new Users();
+        User user = new User();
 
-        users.setName( usersPostRequestsBody.getName() );
-        users.setSenha( usersPostRequestsBody.getSenha() );
-        users.setEmail( usersPostRequestsBody.getEmail() );
-        users.setCpf( usersPostRequestsBody.getCpf() );
+        user.setName( usersPostRequestsBody.getName() );
+        user.setEmail( usersPostRequestsBody.getEmail() );
+        user.setCpf( usersPostRequestsBody.getCpf() );
 
-        return users;
+        return user;
     }
 
     @Override
-    public Users toUsers(UsersPutRequestsBody UsersPutRequestsBody) {
+    public User toUsers(UsersPutRequestsBody UsersPutRequestsBody) {
         if ( UsersPutRequestsBody == null ) {
             return null;
         }
 
-        Users users = new Users();
+        User user = new User();
 
-        users.setId( UsersPutRequestsBody.getId() );
-        users.setName( UsersPutRequestsBody.getName() );
-        users.setSenha( UsersPutRequestsBody.getSenha() );
-        users.setEmail( UsersPutRequestsBody.getEmail() );
-        users.setCpf( UsersPutRequestsBody.getCpf() );
+        user.setId( UsersPutRequestsBody.getId() );
+        user.setName( UsersPutRequestsBody.getName() );
+        user.setEmail( UsersPutRequestsBody.getEmail() );
+        user.setCpf( UsersPutRequestsBody.getCpf() );
 
-        return users;
+        return user;
     }
 }
