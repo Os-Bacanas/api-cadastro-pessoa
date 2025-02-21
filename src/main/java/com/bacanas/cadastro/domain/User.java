@@ -1,9 +1,11 @@
 package com.bacanas.cadastro.domain;
 
+import com.bacanas.cadastro.requests.LoginRequest;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
-
 
 @Entity
 @Table(name = "users")
@@ -17,10 +19,13 @@ public class User {
     private String cpf;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<Person> people;
 
+    public boolean isLoginCorrect(LoginRequest loginRequest, PasswordEncoder passwordEncoder) {
+        return passwordEncoder.matches(loginRequest.password(), this.password);
+    }
 
-    //constructor
     public User() {
     }
 
@@ -32,7 +37,6 @@ public class User {
         this.cpf = cpf;
     }
 
-    //getters e setters
     public Long getId() {
         return id;
     }
@@ -71,5 +75,13 @@ public class User {
 
     public void setCpf(String cpf) {
         this.cpf = cpf;
+    }
+
+    public List<Person> getPeople() {
+        return people;
+    }
+
+    public void setPeople(List<Person> people) {
+        this.people = people;
     }
 }

@@ -8,9 +8,4 @@ import java.util.List;
 public interface PessoasRepository extends JpaRepository<Person, Long> {
     List<Person> findByName(String name);
     String name(String name);
-    //List<Person> findbyUserId(long userId);
-
-    // List<Person> id(Long id);
-
-    //List<Person> findAllById(Long userId);
 }

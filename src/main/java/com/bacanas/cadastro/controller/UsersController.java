@@ -1,12 +1,12 @@
 package com.bacanas.cadastro.controller;
 
-
 import com.bacanas.cadastro.domain.User;
 import com.bacanas.cadastro.requests.UsersPostRequestsBody;
 import com.bacanas.cadastro.requests.UsersPutRequestsBody;
 import com.bacanas.cadastro.service.UsersService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,9 +15,11 @@ import java.util.List;
 @RequestMapping("/users")
 public class UsersController {
     private final UsersService usersService;
+    private final BCryptPasswordEncoder passwordEncoder;
 
-    public UsersController(UsersService usersService) {
+    public UsersController(UsersService usersService, BCryptPasswordEncoder passwordEncoder) {
         this.usersService = usersService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping()
@@ -25,19 +27,20 @@ public class UsersController {
         return ResponseEntity.ok(usersService.listAll());
     }
 
-//    @GetMapping(path = "/{id}")
-//    public ResponseEntity<User> findById(@PathVariable long id) {
-//        return ResponseEntity.ok(usersService.findByIdOrThrowBadException(id));
-//    }
+    @GetMapping(path = "/{email}")
+    public ResponseEntity<User> findById(@PathVariable String email) {
+        return ResponseEntity.ok(usersService.findByEmail(email));
+    }
 
     @GetMapping(path = "/")
     public ResponseEntity<List<User>> findByName(@RequestParam(name = "name") String name) {
         return ResponseEntity.ok(usersService.findByName(name));
     }
 
-    @PostMapping
-    public ResponseEntity<User> save(@RequestBody UsersPostRequestsBody usersPostRequestsBody) {
-        return new ResponseEntity<>(usersService.save(usersPostRequestsBody), HttpStatus.CREATED);
+    @PostMapping("/cadastro")
+    public ResponseEntity<Void> save(@RequestBody UsersPostRequestsBody usersPostRequestsBody) {
+        usersService.save(usersPostRequestsBody);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @DeleteMapping(path = "/{id}")

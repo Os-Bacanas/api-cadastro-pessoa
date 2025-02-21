@@ -2,6 +2,8 @@ package com.bacanas.cadastro.domain;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "type_phone")
 public class TypePhone {
@@ -9,17 +11,17 @@ public class TypePhone {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "phone_id")
-    private Phone phone;
-
+    @OneToMany(mappedBy = "typePhone")
+    private List<Phone> phones;
+    private String description;
 
     public TypePhone() {
     }
 
-    public TypePhone(Long id, Phone phone) {
+    public TypePhone(Long id, List<Phone> phones, String description) {
         this.id = id;
-        this.phone = phone;
+        this.phones = phones;
+        this.description = description;
     }
 
     public Long getId() {
@@ -30,11 +32,19 @@ public class TypePhone {
         this.id = id;
     }
 
-    public Phone getPhone() {
-        return phone;
+    public List<Phone> getPhones() {
+        return phones;
     }
 
-    public void setPhone(Phone phone) {
-        this.phone = phone;
+    public void setPhones(List<Phone> phones) {
+        this.phones = phones;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

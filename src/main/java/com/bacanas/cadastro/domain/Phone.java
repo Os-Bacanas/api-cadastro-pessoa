@@ -14,7 +14,7 @@ public class Phone {
     @JoinColumn(name = "person_id")
     private Person person;
 
-    @OneToOne(mappedBy = "phone")
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private TypePhone typePhone;
 
     public Phone() {
