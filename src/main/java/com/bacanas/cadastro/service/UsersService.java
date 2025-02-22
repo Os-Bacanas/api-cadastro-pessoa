@@ -9,15 +9,18 @@ import com.bacanas.cadastro.requests.LoginResponse;
 import com.bacanas.cadastro.requests.UsersPostRequestsBody;
 import com.bacanas.cadastro.requests.UsersPutRequestsBody;
 import jakarta.transaction.Transactional;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UsersService {
@@ -49,13 +52,18 @@ public class UsersService {
 
     @Transactional
     public void save(UsersPostRequestsBody usersPostRequestsBody) {
-        var userFormDb = findByEmail(usersPostRequestsBody.getEmail());
-        var user = new User();
-        user.setName((usersPostRequestsBody.getName()));
-        user.setEmail(usersPostRequestsBody.getEmail());
-        user.setCpf(usersPostRequestsBody.getCpf());
-        user.setPassword(usersPostRequestsBody.getSenha());
-        usersRepository.save(user);
+        var userFormDb = usersRepository.findByEmail(usersPostRequestsBody.getEmail());
+        if (userFormDb.isEmpty()) {
+            var user = new User();
+            user.setName((usersPostRequestsBody.getName()));
+            user.setEmail(usersPostRequestsBody.getEmail());
+            user.setCpf(usersPostRequestsBody.getCpf());
+            user.setPassword(passwordEncoder.encode(usersPostRequestsBody.getSenha()));
+            usersRepository.save(user);
+        } else {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "E-mail já cadastrado");
+        }
+
     }
 
     @Transactional
@@ -65,9 +73,19 @@ public class UsersService {
 
     @Transactional
     public void replace(UsersPutRequestsBody usersPutRequestsBody) {
-        User savedUser = findByIdOrThrowBadException(usersPutRequestsBody.getId());
+        User savedUserById = findByIdOrThrowBadException(usersPutRequestsBody.getId());
+        Optional<User> userByEmailFromDb = usersRepository.findByEmail(usersPutRequestsBody.getEmail());
+        if (userByEmailFromDb.isPresent() && !userByEmailFromDb.get().getId().equals(savedUserById.getId())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email já cadastrado");
+        }
         User user = UsersMapper.INSTANCE.toUsers(usersPutRequestsBody);
-        user.setId(savedUser.getId());
+        user.setId(savedUserById.getId());
+
+        if (usersPutRequestsBody.getPassword() == null || usersPutRequestsBody.getPassword().isEmpty()) {
+            user.setPassword(savedUserById.getPassword());
+        } else {
+            user.setPassword(passwordEncoder.encode(usersPutRequestsBody.getPassword()));
+        }
         usersRepository.save(user);
     }
 
