@@ -1,23 +1,23 @@
 package com.bacanas.cadastro.requests;
 
+import java.util.List;
+
 public class PersonDTO {
     private Long id;
     private String name;
     private String email;
     private String cpf;
-    private String phone;
-    private String typePhone;
+    private List<PhoneDTO> phones;
 
     public PersonDTO() {
     }
 
-    public PersonDTO(Long id, String name, String email, String cpf, String phone, String typePhone) {
+    public PersonDTO(Long id, String name, String email, String cpf, List<PhoneDTO> phones) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.cpf = cpf;
-        this.phone = phone;
-        this.typePhone = typePhone;
+        this.phones = phones;
     }
 
     public Long getId() {
@@ -52,19 +52,11 @@ public class PersonDTO {
         this.cpf = cpf;
     }
 
-    public String getPhone() {
-        return phone;
+    public List<PhoneDTO> getPhones() {
+        return phones;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getTypePhone() {
-        return typePhone;
-    }
-
-    public void setTypePhone(String typePhone) {
-        this.typePhone = typePhone;
+    public void setPhones(List<PhoneDTO> phones) {
+        this.phones = phones;
     }
 }

@@ -14,7 +14,7 @@ public class Phone {
     @JoinColumn(name = "person_id")
     private Person person;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     private TypePhone typePhone;
 
     public Phone() {

@@ -11,8 +11,8 @@ import java.util.Optional;
 
 @Configuration
 public class AdminUserConfig implements CommandLineRunner {
-    private UsersRepository usersRepository;
-    private BCryptPasswordEncoder passwordEncoder;
+    private final UsersRepository usersRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     public AdminUserConfig(UsersRepository usersRepository, BCryptPasswordEncoder passwordEncoder) {
         this.usersRepository = usersRepository;

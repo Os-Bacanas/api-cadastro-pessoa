@@ -12,37 +12,25 @@ import com.bacanas.cadastro.requests.PersonDTO;
 import com.bacanas.cadastro.requests.PessoasPostRequestsBody;
 import com.bacanas.cadastro.requests.PessoasPutRequestsBody;
 import jakarta.transaction.Transactional;
-import org.modelmapper.ModelMapper;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class PessoasService {
     private final PessoasRepository pessoasRepository;
-    private final ModelMapper modelMapper;
     private final UsersService usersService;
-    private final PessoasMapper pessoasMapper;
-    private final PhoneMapper phoneMapper;
-    private final TypePhoneMapper typePhoneMapper;
 
-    public PessoasService(PessoasRepository pessoasRepository, ModelMapper modelMapper, UsersService usersService, PessoasMapper pessoasMapper, PhoneMapper phoneMapper, TypePhoneMapper typePhoneMapper) {
+    public PessoasService(PessoasRepository pessoasRepository, UsersService usersService) {
         this.pessoasRepository = pessoasRepository;
-        this.modelMapper = modelMapper;
         this.usersService = usersService;
-        this.pessoasMapper = pessoasMapper;
-        this.phoneMapper = phoneMapper;
-        this.typePhoneMapper = typePhoneMapper;
     }
 
     public List<PersonDTO> listAll() {
         List<Person> people = pessoasRepository.findAll();
-        return people.stream()
-                .map(person -> modelMapper.map(person, PersonDTO.class))
-                .collect(Collectors.toList());
+        return PessoasMapper.INSTANCE.toPersonDTOList(people);
     }
 
     public List<Person> findByName(String name) {
@@ -56,13 +44,13 @@ public class PessoasService {
     @Transactional
     public void save(PessoasPostRequestsBody pessoasPostRequestsBody, JwtAuthenticationToken token) {
         var user = usersService.findByIdOrThrowBadException(Long.parseLong(token.getName()));
-        Person person = pessoasMapper.toPessoas(pessoasPostRequestsBody);
+        Person person = PessoasMapper.INSTANCE.toPessoas(pessoasPostRequestsBody);
         person.setUser(user);
 
         List<Phone> phones = new ArrayList<>();
         for (Phone phoneRequest : pessoasPostRequestsBody.getPhones()) {
-            Phone phone = phoneMapper.toPhone(phoneRequest);
-            TypePhone typePhone = typePhoneMapper.toTypePhone(phoneRequest.getTypePhone().getDescription());
+            Phone phone = PhoneMapper.INSTANCE.toPhone(phoneRequest);
+            TypePhone typePhone = TypePhoneMapper.INSTANCE.toTypePhone(phoneRequest.getTypePhone().getDescription());
             phone.setTypePhone(typePhone);
             phone.setPerson(person);
             phones.add(phone);

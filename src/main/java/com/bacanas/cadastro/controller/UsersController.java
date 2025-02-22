@@ -6,7 +6,6 @@ import com.bacanas.cadastro.requests.UsersPutRequestsBody;
 import com.bacanas.cadastro.service.UsersService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,11 +14,9 @@ import java.util.List;
 @RequestMapping("/users")
 public class UsersController {
     private final UsersService usersService;
-    private final BCryptPasswordEncoder passwordEncoder;
 
-    public UsersController(UsersService usersService, BCryptPasswordEncoder passwordEncoder) {
+    public UsersController(UsersService usersService) {
         this.usersService = usersService;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping()
@@ -28,7 +25,7 @@ public class UsersController {
     }
 
     @GetMapping(path = "/{email}")
-    public ResponseEntity<User> findById(@PathVariable String email) {
+    public ResponseEntity<User> findByEmail(@PathVariable String email) {
         return ResponseEntity.ok(usersService.findByEmail(email));
     }
 

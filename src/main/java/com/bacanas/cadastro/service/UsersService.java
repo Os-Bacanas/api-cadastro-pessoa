@@ -92,7 +92,7 @@ public class UsersService {
     public LoginResponse login(LoginRequest loginRequest) {
         var user = findByEmail(loginRequest.email());
         if (!user.isLoginCorrect(loginRequest, passwordEncoder)) {
-            throw new BadCredentialsException("Email or password is invalid");
+            throw new BadCredentialsException("Email or password is not invalid");
         }
         var now = Instant.now();
         var expiresIn = 300L;
