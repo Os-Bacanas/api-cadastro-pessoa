@@ -4,7 +4,6 @@ import com.bacanas.cadastro.domain.Person;
 import com.bacanas.cadastro.domain.Phone;
 import com.bacanas.cadastro.requests.PersonDTO;
 import com.bacanas.cadastro.requests.PessoasPostRequestsBody;
-import com.bacanas.cadastro.requests.PessoasPutRequestsBody;
 import com.bacanas.cadastro.requests.PhoneDTO;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-02-22T18:48:27-0300",
+    date = "2025-02-23T00:48:47-0300",
     comments = "version: 1.6.3, compiler: javac, environment: Java 23.0.2 (Oracle Corporation)"
 )
 @Component
@@ -85,6 +84,23 @@ public class PessoasMapperImpl extends PessoasMapper {
         return list;
     }
 
+    @Override
+    public Person toPerson(PersonDTO personDTO) {
+        if ( personDTO == null ) {
+            return null;
+        }
+
+        Person person = new Person();
+
+        person.setId( personDTO.getId() );
+        person.setName( personDTO.getName() );
+        person.setEmail( personDTO.getEmail() );
+        person.setCpf( personDTO.getCpf() );
+        person.setPhones( phoneDTOListToPhoneList( personDTO.getPhones() ) );
+
+        return person;
+    }
+
     protected PhoneDTO phoneToPhoneDTO(Phone phone) {
         if ( phone == null ) {
             return null;
@@ -106,6 +122,32 @@ public class PessoasMapperImpl extends PessoasMapper {
         List<PhoneDTO> list1 = new ArrayList<PhoneDTO>( list.size() );
         for ( Phone phone : list ) {
             list1.add( phoneToPhoneDTO( phone ) );
+        }
+
+        return list1;
+    }
+
+    protected Phone phoneDTOToPhone(PhoneDTO phoneDTO) {
+        if ( phoneDTO == null ) {
+            return null;
+        }
+
+        Phone phone = new Phone();
+
+        phone.setNumber( phoneDTO.getNumber() );
+        phone.setTypePhone( map( phoneDTO.getTypePhone() ) );
+
+        return phone;
+    }
+
+    protected List<Phone> phoneDTOListToPhoneList(List<PhoneDTO> list) {
+        if ( list == null ) {
+            return null;
+        }
+
+        List<Phone> list1 = new ArrayList<Phone>( list.size() );
+        for ( PhoneDTO phoneDTO : list ) {
+            list1.add( phoneDTOToPhone( phoneDTO ) );
         }
 
         return list1;

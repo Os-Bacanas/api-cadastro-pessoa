@@ -3,7 +3,6 @@ package com.bacanas.cadastro.controller;
 import com.bacanas.cadastro.domain.Person;
 import com.bacanas.cadastro.requests.PersonDTO;
 import com.bacanas.cadastro.requests.PessoasPostRequestsBody;
-import com.bacanas.cadastro.requests.PessoasPutRequestsBody;
 import com.bacanas.cadastro.service.PessoasService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,8 +43,8 @@ public class PessoasController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Void> replace(@RequestBody PessoasPutRequestsBody pessoasPutRequestsBody, @PathVariable long id) {
-        pessoasService.replace(pessoasPutRequestsBody, id);
+    public ResponseEntity<Void> replace(@RequestBody PersonDTO personDTO, @PathVariable long id) {
+        pessoasService.replace(personDTO, id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

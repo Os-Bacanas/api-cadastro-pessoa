@@ -24,6 +24,10 @@ public class TypePhone {
         this.description = description;
     }
 
+    public TypePhone(String description) {
+        this.description = description;
+    }
+
     public Long getId() {
         return id;
     }

@@ -10,7 +10,6 @@ import com.bacanas.cadastro.mapper.TypePhoneMapper;
 import com.bacanas.cadastro.repository.PessoasRepository;
 import com.bacanas.cadastro.requests.PersonDTO;
 import com.bacanas.cadastro.requests.PessoasPostRequestsBody;
-import com.bacanas.cadastro.requests.PessoasPutRequestsBody;
 import jakarta.transaction.Transactional;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
@@ -65,10 +64,15 @@ public class PessoasService {
     }
 
     @Transactional
-    public void replace(PessoasPutRequestsBody pessoasPutRequestsBody, Long id) {
+    public void replace(PersonDTO personDTO, Long id) {
         Person savedPerson = findByIdOrThrowBadException(id);
-        Person person = PessoasMapper.INSTANCE.toPessoas(pessoasPutRequestsBody);
+        Person person = PessoasMapper.INSTANCE.toPerson(personDTO);
         person.setId(savedPerson.getId());
+        if (person.getPhones() != null) {
+            for (Phone phone : person.getPhones()) {
+                phone.setPerson(person);
+            }
+        }
         pessoasRepository.save(person);
     }
 }
