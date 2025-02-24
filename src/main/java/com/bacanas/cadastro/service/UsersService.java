@@ -92,13 +92,17 @@ public class UsersService {
     public LoginResponse login(LoginRequest loginRequest) {
         var user = findByEmail(loginRequest.email());
         if (!user.isLoginCorrect(loginRequest, passwordEncoder)) {
-            throw new BadCredentialsException("Email or password is not invalid");
+            throw new BadCredentialsException("Email or password is incorrect");
         }
         var now = Instant.now();
-        var expiresIn = 300L;
+        var expiresIn = 86400L;
         var claims = JwtClaimsSet.builder()
                 .issuer("apiCadastro")
                 .subject(user.getId().toString())
+                .claim("id", user.getId())
+                .claim("name", user.getName())
+                .claim("email", user.getEmail())
+                .claim("cpf", user.getCpf())
                 .issuedAt(now)
                 .expiresAt(now.plusSeconds(expiresIn))
                 .build();

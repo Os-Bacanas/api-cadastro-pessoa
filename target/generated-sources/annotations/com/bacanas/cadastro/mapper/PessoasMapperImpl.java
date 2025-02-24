@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-02-23T00:48:47-0300",
+    date = "2025-02-23T22:22:16-0300",
     comments = "version: 1.6.3, compiler: javac, environment: Java 23.0.2 (Oracle Corporation)"
 )
 @Component
@@ -38,17 +38,18 @@ public class PessoasMapperImpl extends PessoasMapper {
     }
 
     @Override
-    public Person toPessoas(PessoasPutRequestsBody pessoasPutRequestsBody) {
-        if ( pessoasPutRequestsBody == null ) {
+    public Person toPerson(PersonDTO personDTO) {
+        if ( personDTO == null ) {
             return null;
         }
 
         Person person = new Person();
 
-        person.setId( pessoasPutRequestsBody.getId() );
-        person.setName( pessoasPutRequestsBody.getName() );
-        person.setEmail( pessoasPutRequestsBody.getEmail() );
-        person.setCpf( pessoasPutRequestsBody.getCpf() );
+        person.setId( personDTO.getId() );
+        person.setName( personDTO.getName() );
+        person.setEmail( personDTO.getEmail() );
+        person.setCpf( personDTO.getCpf() );
+        person.setPhones( phoneDTOListToPhoneList( personDTO.getPhones() ) );
 
         return person;
     }
@@ -84,21 +85,30 @@ public class PessoasMapperImpl extends PessoasMapper {
         return list;
     }
 
-    @Override
-    public Person toPerson(PersonDTO personDTO) {
-        if ( personDTO == null ) {
+    protected Phone phoneDTOToPhone(PhoneDTO phoneDTO) {
+        if ( phoneDTO == null ) {
             return null;
         }
 
-        Person person = new Person();
+        Phone phone = new Phone();
 
-        person.setId( personDTO.getId() );
-        person.setName( personDTO.getName() );
-        person.setEmail( personDTO.getEmail() );
-        person.setCpf( personDTO.getCpf() );
-        person.setPhones( phoneDTOListToPhoneList( personDTO.getPhones() ) );
+        phone.setNumber( phoneDTO.getNumber() );
+        phone.setTypePhone( map( phoneDTO.getTypePhone() ) );
 
-        return person;
+        return phone;
+    }
+
+    protected List<Phone> phoneDTOListToPhoneList(List<PhoneDTO> list) {
+        if ( list == null ) {
+            return null;
+        }
+
+        List<Phone> list1 = new ArrayList<Phone>( list.size() );
+        for ( PhoneDTO phoneDTO : list ) {
+            list1.add( phoneDTOToPhone( phoneDTO ) );
+        }
+
+        return list1;
     }
 
     protected PhoneDTO phoneToPhoneDTO(Phone phone) {
@@ -122,32 +132,6 @@ public class PessoasMapperImpl extends PessoasMapper {
         List<PhoneDTO> list1 = new ArrayList<PhoneDTO>( list.size() );
         for ( Phone phone : list ) {
             list1.add( phoneToPhoneDTO( phone ) );
-        }
-
-        return list1;
-    }
-
-    protected Phone phoneDTOToPhone(PhoneDTO phoneDTO) {
-        if ( phoneDTO == null ) {
-            return null;
-        }
-
-        Phone phone = new Phone();
-
-        phone.setNumber( phoneDTO.getNumber() );
-        phone.setTypePhone( map( phoneDTO.getTypePhone() ) );
-
-        return phone;
-    }
-
-    protected List<Phone> phoneDTOListToPhoneList(List<PhoneDTO> list) {
-        if ( list == null ) {
-            return null;
-        }
-
-        List<Phone> list1 = new ArrayList<Phone>( list.size() );
-        for ( PhoneDTO phoneDTO : list ) {
-            list1.add( phoneDTOToPhone( phoneDTO ) );
         }
 
         return list1;

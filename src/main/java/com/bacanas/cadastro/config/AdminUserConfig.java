@@ -28,7 +28,7 @@ public class AdminUserConfig implements CommandLineRunner {
             user.setName("admin");
             user.setEmail("admin@dev.com");
             user.setCpf("111.111.111-11");
-            user.setPassword(passwordEncoder.encode("123"));
+            user.setPassword(passwordEncoder.encode("senhamuitoforte123"));
             usersRepository.save(user);
         }
     }

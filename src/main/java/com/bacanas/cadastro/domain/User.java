@@ -29,12 +29,13 @@ public class User {
     public User() {
     }
 
-    public User(Long id, String name, String password, String email, String cpf) {
+    public User(Long id, String name, String password, String email, String cpf, List<Person> people) {
         this.id = id;
         this.name = name;
         this.password = password;
         this.email = email;
         this.cpf = cpf;
+        this.people = people;
     }
 
     public Long getId() {
