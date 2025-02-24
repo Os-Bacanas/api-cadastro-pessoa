@@ -99,7 +99,6 @@ public class UsersService {
         var claims = JwtClaimsSet.builder()
                 .issuer("apiCadastro")
                 .subject(user.getId().toString())
-                .claim("id", user.getId())
                 .claim("name", user.getName())
                 .claim("email", user.getEmail())
                 .claim("cpf", user.getCpf())
