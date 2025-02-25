@@ -49,14 +49,13 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // Configuração CORS
     private UrlBasedCorsConfigurationSource corsConfigurationSource() {
         var source = new UrlBasedCorsConfigurationSource();
         var corsConfig = new CorsConfiguration();
-        corsConfig.addAllowedOrigin("*"); // Permite todas as origens
-        corsConfig.addAllowedMethod("*"); // Permite todos os métodos HTTP
-        corsConfig.addAllowedHeader("*"); // Permite todos os cabeçalhos
-        source.registerCorsConfiguration("/**", corsConfig); // Aplica a configuração a todas as rotas
+        corsConfig.addAllowedOrigin("*");
+        corsConfig.addAllowedMethod("*");
+        corsConfig.addAllowedHeader("*");
+        source.registerCorsConfiguration("/**", corsConfig);
         return source;
     }
 

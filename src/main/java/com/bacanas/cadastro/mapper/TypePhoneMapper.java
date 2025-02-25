@@ -1,7 +1,6 @@
 package com.bacanas.cadastro.mapper;
 
 import com.bacanas.cadastro.domain.TypePhone;
-import com.bacanas.cadastro.requests.TypePhoneDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -14,6 +13,4 @@ public abstract class TypePhoneMapper {
         typePhone.setDescription(description);
         return typePhone;
     }
-
-    public abstract TypePhone toTypePhone(TypePhoneDTO typePhoneDTO);
 }

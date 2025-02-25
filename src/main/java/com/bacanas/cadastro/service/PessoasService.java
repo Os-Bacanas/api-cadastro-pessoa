@@ -42,13 +42,10 @@ public class PessoasService {
         return personDTOList;
     }
 
-    public List<Person> findByName(String name) {
-        return pessoasRepository.findByName(name);
-    }
-
     @Transactional
     public void save(PersonDTO personDTO, JwtAuthenticationToken token) {
         var user = usersService.findByIdOrThrowBadException(Long.parseLong(token.getName()));
+        findByEmail(personDTO.getEmail());
         Person person = PessoasMapper.INSTANCE.toPerson(personDTO);
         person.setUser(user);
         List<Phone> phones = new ArrayList<>();
@@ -63,31 +60,16 @@ public class PessoasService {
         pessoasRepository.save(person);
     }
 
-    private List<Person> findByEmailsOrThrowBadException(List<String> emails) {
-        List<Person> pessoas = pessoasRepository.findByEmailIn(emails);
-        if (pessoas.size() != emails.size()) {
-            throw new BadRequestException("Some people not found");
-        }
-        return pessoas;
-    }
-
     @Transactional
     public void delete(List<String> emails) {
         List<Person> pessoas = findByEmailsOrThrowBadException(emails);
         pessoasRepository.deleteAll(pessoas);
     }
 
-    private Person findByIdOrThrowBadException(Long id) {
-        return pessoasRepository.findById(id).orElseThrow(() -> new BadRequestException("Person not found"));
-    }
-
     @Transactional
     public void replace(PersonDTO personDTO) {
         Person savedPerson = findByIdOrThrowBadException(personDTO.getId());
-        Optional<Person> userByEmailFromDb = pessoasRepository.findByEmail(personDTO.getEmail());
-        if (userByEmailFromDb.isPresent() && !userByEmailFromDb.get().getId().equals(savedPerson.getId())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email já cadastrado");
-        }
+        findByEmail(personDTO.getEmail());
         Person person = PessoasMapper.INSTANCE.toPerson(personDTO);
         person.setId(savedPerson.getId());
         List<Phone> phones = new ArrayList<>();
@@ -102,13 +84,31 @@ public class PessoasService {
         pessoasRepository.save(person);
     }
 
+    private void findByEmail(String email) {
+        Optional<Person> personFromDb = pessoasRepository.findByEmail(email);
+        if (personFromDb.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email ja cadastrado");
+        }
+    }
+
     private TypePhone findOrCreateTypePhone(String description) {
         Optional<TypePhone> existingTypePhone = typePhoneRepository.findByDescription(description);
-
         return existingTypePhone.orElseGet(() -> {
             TypePhone newTypePhone = new TypePhone();
             newTypePhone.setDescription(description);
             return typePhoneRepository.save(newTypePhone);
         });
+    }
+
+    private Person findByIdOrThrowBadException(Long id) {
+        return pessoasRepository.findById(id).orElseThrow(() -> new BadRequestException("Person not found"));
+    }
+
+    private List<Person> findByEmailsOrThrowBadException(List<String> emails) {
+        List<Person> pessoas = pessoasRepository.findByEmailIn(emails);
+        if (pessoas.size() != emails.size()) {
+            throw new BadRequestException("Some people not found");
+        }
+        return pessoas;
     }
 }

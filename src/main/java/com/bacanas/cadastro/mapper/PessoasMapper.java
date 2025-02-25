@@ -5,7 +5,6 @@ import com.bacanas.cadastro.domain.Phone;
 import com.bacanas.cadastro.domain.TypePhone;
 import com.bacanas.cadastro.repository.TypePhoneRepository;
 import com.bacanas.cadastro.requests.PersonDTO;
-import com.bacanas.cadastro.requests.PessoasPostRequestsBody;
 import com.bacanas.cadastro.requests.PhoneDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -16,27 +15,23 @@ import java.util.Optional;
 
 @Mapper(componentModel = "spring", uses = {TypePhoneRepository.class})
 public abstract class PessoasMapper {
+    public static final PessoasMapper INSTANCE = Mappers.getMapper(PessoasMapper.class);
 
     @Autowired
     private TypePhoneRepository typePhoneRepository;
 
-    public static final PessoasMapper INSTANCE = Mappers.getMapper(PessoasMapper.class);
-
     @Mapping(target = "phones", source = "phones")
     public abstract PersonDTO toPersonDTO(Person person);
-
     @Mapping(target = "typePhoneDTO", source = "typePhone")
     public abstract PhoneDTO toPhoneDTO(Phone phone);
-
     public abstract Person toPerson(PersonDTO personDTO);
-
-    public abstract Person toPerson(PessoasPostRequestsBody pessoasPostRequestsBody);
 
     public TypePhone map(String description) {
         TypePhone typePhone = new TypePhone();
         typePhone.setDescription(description);
         return typePhone;
     }
+
     public TypePhone mapFromRepository(String description) {
         Optional<TypePhone> typePhone = typePhoneRepository.findByDescription(description);
         return typePhone.orElseGet(() -> {

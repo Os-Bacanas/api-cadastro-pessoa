@@ -1,6 +1,5 @@
 package com.bacanas.cadastro.requests;
 
-
 public class UsersPutRequestsBody {
     private Long id;
     private String name;

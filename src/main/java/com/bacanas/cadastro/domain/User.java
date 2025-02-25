@@ -22,10 +22,6 @@ public class User {
     @JsonIgnore
     private List<Person> people;
 
-    public boolean isLoginCorrect(LoginRequest loginRequest, PasswordEncoder passwordEncoder) {
-        return passwordEncoder.matches(loginRequest.password(), this.password);
-    }
-
     public User() {
     }
 
@@ -36,6 +32,10 @@ public class User {
         this.email = email;
         this.cpf = cpf;
         this.people = people;
+    }
+
+    public boolean isLoginCorrect(LoginRequest loginRequest, PasswordEncoder passwordEncoder) {
+        return passwordEncoder.matches(loginRequest.password(), this.password);
     }
 
     public Long getId() {

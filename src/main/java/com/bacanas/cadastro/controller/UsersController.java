@@ -24,16 +24,6 @@ public class UsersController {
         return ResponseEntity.ok(usersService.listAll());
     }
 
-    @GetMapping(path = "/{email}")
-    public ResponseEntity<User> findByEmail(@PathVariable String email) {
-        return ResponseEntity.ok(usersService.findByEmail(email));
-    }
-
-    @GetMapping(path = "/")
-    public ResponseEntity<List<User>> findByName(@RequestParam(name = "name") String name) {
-        return ResponseEntity.ok(usersService.findByName(name));
-    }
-
     @PostMapping("/cadastro")
     public ResponseEntity<Void> save(@RequestBody UsersPostRequestsBody usersPostRequestsBody) {
         usersService.save(usersPostRequestsBody);

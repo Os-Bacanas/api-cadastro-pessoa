@@ -4,7 +4,6 @@ import com.bacanas.cadastro.domain.Person;
 import com.bacanas.cadastro.domain.Phone;
 import com.bacanas.cadastro.domain.TypePhone;
 import com.bacanas.cadastro.requests.PersonDTO;
-import com.bacanas.cadastro.requests.PessoasPostRequestsBody;
 import com.bacanas.cadastro.requests.PhoneDTO;
 import com.bacanas.cadastro.requests.TypePhoneDTO;
 import java.util.ArrayList;
@@ -14,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-02-25T16:07:39-0300",
+    date = "2025-02-25T17:07:07-0300",
     comments = "version: 1.6.3, compiler: javac, environment: Java 23.0.2 (Oracle Corporation)"
 )
 @Component
@@ -64,25 +63,6 @@ public class PessoasMapperImpl extends PessoasMapper {
         person.setEmail( personDTO.getEmail() );
         person.setCpf( personDTO.getCpf() );
         person.setPhones( phoneDTOListToPhoneList( personDTO.getPhones() ) );
-
-        return person;
-    }
-
-    @Override
-    public Person toPerson(PessoasPostRequestsBody pessoasPostRequestsBody) {
-        if ( pessoasPostRequestsBody == null ) {
-            return null;
-        }
-
-        Person person = new Person();
-
-        person.setName( pessoasPostRequestsBody.getName() );
-        person.setEmail( pessoasPostRequestsBody.getEmail() );
-        person.setCpf( pessoasPostRequestsBody.getCpf() );
-        List<Phone> list = pessoasPostRequestsBody.getPhones();
-        if ( list != null ) {
-            person.setPhones( new ArrayList<Phone>( list ) );
-        }
 
         return person;
     }

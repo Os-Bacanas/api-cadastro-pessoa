@@ -1,6 +1,5 @@
 package com.bacanas.cadastro.requests;
 
-
 public class UsersPostRequestsBody {
     private String name;
     private String email;

@@ -1,6 +1,5 @@
 package com.bacanas.cadastro.controller;
 
-import com.bacanas.cadastro.domain.Person;
 import com.bacanas.cadastro.requests.PersonDTO;
 import com.bacanas.cadastro.service.PessoasService;
 import org.springframework.http.HttpStatus;
@@ -22,11 +21,6 @@ public class PessoasController {
     @GetMapping
     public ResponseEntity<List<PersonDTO>> listAll() {
         return ResponseEntity.ok(pessoasService.listAll());
-    }
-
-    @GetMapping(path = "/find")
-    public ResponseEntity<List<Person>> findByName(@RequestParam(name = "name") String name) {
-        return ResponseEntity.ok(pessoasService.findByName(name));
     }
 
     @PostMapping

@@ -38,18 +38,6 @@ public class UsersService {
         return usersRepository.findAll();
     }
 
-    public List<User> findByName(String name) {
-        return usersRepository.findByName(name);
-    }
-
-    public User findByEmail(String email) {
-        return usersRepository.findByEmail(email).orElseThrow(() -> new BadRequestException("User not found"));
-    }
-
-    public User findByIdOrThrowBadException(Long id) {
-        return usersRepository.findById(id).orElseThrow(() -> new BadRequestException("User not found"));
-    }
-
     @Transactional
     public void save(UsersPostRequestsBody usersPostRequestsBody) {
         var userFormDb = usersRepository.findByEmail(usersPostRequestsBody.getEmail());
@@ -107,5 +95,13 @@ public class UsersService {
                 .build();
         var tokenValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
         return new LoginResponse(tokenValue, expiresIn);
+    }
+
+    private User findByEmail(String email) {
+        return usersRepository.findByEmail(email).orElseThrow(() -> new BadRequestException("User not found"));
+    }
+
+    public User findByIdOrThrowBadException(Long id) {
+        return usersRepository.findById(id).orElseThrow(() -> new BadRequestException("User not found"));
     }
 }
