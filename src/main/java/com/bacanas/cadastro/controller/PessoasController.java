@@ -2,7 +2,6 @@ package com.bacanas.cadastro.controller;
 
 import com.bacanas.cadastro.domain.Person;
 import com.bacanas.cadastro.requests.PersonDTO;
-import com.bacanas.cadastro.requests.PessoasPostRequestsBody;
 import com.bacanas.cadastro.service.PessoasService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,8 +30,8 @@ public class PessoasController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> save(@RequestBody PessoasPostRequestsBody pessoasPostRequestsBody, JwtAuthenticationToken token) {
-        pessoasService.save(pessoasPostRequestsBody, token);
+    public ResponseEntity<Void> save(@RequestBody PersonDTO personDTO, JwtAuthenticationToken token) {
+        pessoasService.save(personDTO, token);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 

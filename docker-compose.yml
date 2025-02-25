@@ -8,6 +8,8 @@ services:
       MYSQL_DATABASE: os_bacanas
     ports:
       - "3307:3306"
+    networks:
+      - rede-api
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       interval: 10s
@@ -18,13 +20,19 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    ports:
-      - '8080:8080'
     container_name: api-cadastro
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/os_bacanas
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: 123
+    ports:
+      - "8080:8080"
     depends_on:
       db:
         condition: service_healthy
+    networks:
+      - rede-api
+
+networks:
+  rede-api:
+    driver: bridge

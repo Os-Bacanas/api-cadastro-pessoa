@@ -2,9 +2,11 @@ package com.bacanas.cadastro.mapper;
 
 import com.bacanas.cadastro.domain.Person;
 import com.bacanas.cadastro.domain.Phone;
+import com.bacanas.cadastro.domain.TypePhone;
 import com.bacanas.cadastro.requests.PersonDTO;
 import com.bacanas.cadastro.requests.PessoasPostRequestsBody;
 import com.bacanas.cadastro.requests.PhoneDTO;
+import com.bacanas.cadastro.requests.TypePhoneDTO;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.processing.Generated;
@@ -12,29 +14,41 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-02-24T15:32:38-0300",
+    date = "2025-02-25T16:00:37-0300",
     comments = "version: 1.6.3, compiler: javac, environment: Java 23.0.2 (Oracle Corporation)"
 )
 @Component
 public class PessoasMapperImpl extends PessoasMapper {
 
     @Override
-    public Person toPessoas(PessoasPostRequestsBody pessoasPostRequestsBody) {
-        if ( pessoasPostRequestsBody == null ) {
+    public PersonDTO toPersonDTO(Person person) {
+        if ( person == null ) {
             return null;
         }
 
-        Person person = new Person();
+        PersonDTO personDTO = new PersonDTO();
 
-        person.setName( pessoasPostRequestsBody.getName() );
-        person.setEmail( pessoasPostRequestsBody.getEmail() );
-        person.setCpf( pessoasPostRequestsBody.getCpf() );
-        List<Phone> list = pessoasPostRequestsBody.getPhones();
-        if ( list != null ) {
-            person.setPhones( new ArrayList<Phone>( list ) );
+        personDTO.setPhones( phoneListToPhoneDTOList( person.getPhones() ) );
+        personDTO.setId( person.getId() );
+        personDTO.setName( person.getName() );
+        personDTO.setEmail( person.getEmail() );
+        personDTO.setCpf( person.getCpf() );
+
+        return personDTO;
+    }
+
+    @Override
+    public PhoneDTO toPhoneDTO(Phone phone) {
+        if ( phone == null ) {
+            return null;
         }
 
-        return person;
+        PhoneDTO phoneDTO = new PhoneDTO();
+
+        phoneDTO.setTypePhoneDTO( typePhoneToTypePhoneDTO( phone.getTypePhone() ) );
+        phoneDTO.setNumber( phone.getNumber() );
+
+        return phoneDTO;
     }
 
     @Override
@@ -55,34 +69,47 @@ public class PessoasMapperImpl extends PessoasMapper {
     }
 
     @Override
-    public PersonDTO toPersonDTO(Person person) {
-        if ( person == null ) {
+    public Person toPerson(PessoasPostRequestsBody pessoasPostRequestsBody) {
+        if ( pessoasPostRequestsBody == null ) {
             return null;
         }
 
-        PersonDTO personDTO = new PersonDTO();
+        Person person = new Person();
 
-        personDTO.setId( person.getId() );
-        personDTO.setName( person.getName() );
-        personDTO.setEmail( person.getEmail() );
-        personDTO.setCpf( person.getCpf() );
-        personDTO.setPhones( phoneListToPhoneDTOList( person.getPhones() ) );
+        person.setName( pessoasPostRequestsBody.getName() );
+        person.setEmail( pessoasPostRequestsBody.getEmail() );
+        person.setCpf( pessoasPostRequestsBody.getCpf() );
+        List<Phone> list = pessoasPostRequestsBody.getPhones();
+        if ( list != null ) {
+            person.setPhones( new ArrayList<Phone>( list ) );
+        }
 
-        return personDTO;
+        return person;
     }
 
-    @Override
-    public List<PersonDTO> toPersonDTOList(List<Person> people) {
-        if ( people == null ) {
+    protected List<PhoneDTO> phoneListToPhoneDTOList(List<Phone> list) {
+        if ( list == null ) {
             return null;
         }
 
-        List<PersonDTO> list = new ArrayList<PersonDTO>( people.size() );
-        for ( Person person : people ) {
-            list.add( toPersonDTO( person ) );
+        List<PhoneDTO> list1 = new ArrayList<PhoneDTO>( list.size() );
+        for ( Phone phone : list ) {
+            list1.add( toPhoneDTO( phone ) );
         }
 
-        return list;
+        return list1;
+    }
+
+    protected TypePhoneDTO typePhoneToTypePhoneDTO(TypePhone typePhone) {
+        if ( typePhone == null ) {
+            return null;
+        }
+
+        TypePhoneDTO typePhoneDTO = new TypePhoneDTO();
+
+        typePhoneDTO.setDescription( typePhone.getDescription() );
+
+        return typePhoneDTO;
     }
 
     protected Phone phoneDTOToPhone(PhoneDTO phoneDTO) {
@@ -93,7 +120,6 @@ public class PessoasMapperImpl extends PessoasMapper {
         Phone phone = new Phone();
 
         phone.setNumber( phoneDTO.getNumber() );
-        phone.setTypePhone( map( phoneDTO.getTypePhone() ) );
 
         return phone;
     }
@@ -106,32 +132,6 @@ public class PessoasMapperImpl extends PessoasMapper {
         List<Phone> list1 = new ArrayList<Phone>( list.size() );
         for ( PhoneDTO phoneDTO : list ) {
             list1.add( phoneDTOToPhone( phoneDTO ) );
-        }
-
-        return list1;
-    }
-
-    protected PhoneDTO phoneToPhoneDTO(Phone phone) {
-        if ( phone == null ) {
-            return null;
-        }
-
-        PhoneDTO phoneDTO = new PhoneDTO();
-
-        phoneDTO.setNumber( phone.getNumber() );
-        phoneDTO.setTypePhone( map( phone.getTypePhone() ) );
-
-        return phoneDTO;
-    }
-
-    protected List<PhoneDTO> phoneListToPhoneDTOList(List<Phone> list) {
-        if ( list == null ) {
-            return null;
-        }
-
-        List<PhoneDTO> list1 = new ArrayList<PhoneDTO>( list.size() );
-        for ( Phone phone : list ) {
-            list1.add( phoneToPhoneDTO( phone ) );
         }
 
         return list1;

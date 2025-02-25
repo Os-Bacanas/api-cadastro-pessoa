@@ -1,15 +1,11 @@
 package com.bacanas.cadastro.requests;
 
+
 public class PhoneDTO {
     private String number;
-    private String typePhone;
+    private TypePhoneDTO typePhoneDTO;
 
     public PhoneDTO() {
-    }
-
-    public PhoneDTO(String number, String typePhone) {
-        this.number = number;
-        this.typePhone = typePhone;
     }
 
     public String getNumber() {
@@ -20,11 +16,16 @@ public class PhoneDTO {
         this.number = number;
     }
 
-    public String getTypePhone() {
-        return typePhone;
+    public PhoneDTO(String number, TypePhoneDTO typePhoneDTO) {
+        this.number = number;
+        this.typePhoneDTO = typePhoneDTO;
     }
 
-    public void setTypePhone(String typePhone) {
-        this.typePhone = typePhone;
+    public TypePhoneDTO getTypePhoneDTO() {
+        return typePhoneDTO;
+    }
+
+    public void setTypePhoneDTO(TypePhoneDTO typePhoneDTO) {
+        this.typePhoneDTO = typePhoneDTO;
     }
 }

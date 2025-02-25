@@ -1,30 +1,48 @@
 package com.bacanas.cadastro.mapper;
 
 import com.bacanas.cadastro.domain.Person;
+import com.bacanas.cadastro.domain.Phone;
 import com.bacanas.cadastro.domain.TypePhone;
+import com.bacanas.cadastro.repository.TypePhoneRepository;
 import com.bacanas.cadastro.requests.PersonDTO;
 import com.bacanas.cadastro.requests.PessoasPostRequestsBody;
+import com.bacanas.cadastro.requests.PhoneDTO;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.List;
+import java.util.Optional;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {TypePhoneRepository.class})
 public abstract class PessoasMapper {
+
+    @Autowired
+    private TypePhoneRepository typePhoneRepository;
+
     public static final PessoasMapper INSTANCE = Mappers.getMapper(PessoasMapper.class);
 
-    public abstract Person toPessoas(PessoasPostRequestsBody pessoasPostRequestsBody);
-    public abstract Person toPerson(PersonDTO personDTO);
+    @Mapping(target = "phones", source = "phones")
     public abstract PersonDTO toPersonDTO(Person person);
-    public abstract List<PersonDTO> toPersonDTOList(List<Person> people);
 
-    //mapeia typePhone para string
-    public String map(TypePhone typePhone) {
-        return typePhone != null ? typePhone.getDescription() : null;
+    @Mapping(target = "typePhoneDTO", source = "typePhone")
+    public abstract PhoneDTO toPhoneDTO(Phone phone);
+
+    public abstract Person toPerson(PersonDTO personDTO);
+
+    public abstract Person toPerson(PessoasPostRequestsBody pessoasPostRequestsBody);
+
+    public TypePhone map(String description) {
+        TypePhone typePhone = new TypePhone();
+        typePhone.setDescription(description);
+        return typePhone;
     }
-
-    //mapeia uma string para typePhone
-    public TypePhone map(String value) {
-        return value != null ? new TypePhone(value) : null;
+    public TypePhone mapFromRepository(String description) {
+        Optional<TypePhone> typePhone = typePhoneRepository.findByDescription(description);
+        return typePhone.orElseGet(() -> {
+            TypePhone newTypePhone = new TypePhone();
+            newTypePhone.setDescription(description);
+            return newTypePhone;
+        });
     }
 }
