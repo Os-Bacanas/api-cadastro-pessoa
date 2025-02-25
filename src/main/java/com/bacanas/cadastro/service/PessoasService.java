@@ -69,7 +69,7 @@ public class PessoasService {
     @Transactional
     public void replace(PersonDTO personDTO) {
         Person savedPerson = findByIdOrThrowBadException(personDTO.getId());
-        findByEmail(personDTO.getEmail());
+        checkEmailUnique(personDTO.getEmail(), savedPerson.getId());
         Person person = PessoasMapper.INSTANCE.toPerson(personDTO);
         person.setId(savedPerson.getId());
         List<Phone> phones = new ArrayList<>();
@@ -82,6 +82,13 @@ public class PessoasService {
         }
         person.setPhones(phones);
         pessoasRepository.save(person);
+    }
+
+    private void checkEmailUnique(String email, Long currentPersonId) {
+        Optional<Person> personFromDb = pessoasRepository.findByEmail(email);
+        if (personFromDb.isPresent() && !personFromDb.get().getId().equals(currentPersonId)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email já cadastrado");
+        }
     }
 
     private void findByEmail(String email) {
