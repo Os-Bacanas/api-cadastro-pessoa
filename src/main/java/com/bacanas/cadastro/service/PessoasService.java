@@ -63,10 +63,10 @@ public class PessoasService {
         pessoasRepository.save(person);
     }
 
-    public List<Person> findByEmailsOrThrowBadException(List<String> emails) {
+    private List<Person> findByEmailsOrThrowBadException(List<String> emails) {
         List<Person> pessoas = pessoasRepository.findByEmailIn(emails);
         if (pessoas.size() != emails.size()) {
-            throw new BadRequestException("Some users not found");
+            throw new BadRequestException("Some people not found");
         }
         return pessoas;
     }
@@ -77,7 +77,7 @@ public class PessoasService {
         pessoasRepository.deleteAll(pessoas);
     }
 
-    public Person findByIdOrThrowBadException(Long id) {
+    private Person findByIdOrThrowBadException(Long id) {
         return pessoasRepository.findById(id).orElseThrow(() -> new BadRequestException("Person not found"));
     }
 
@@ -88,23 +88,27 @@ public class PessoasService {
         if (userByEmailFromDb.isPresent() && !userByEmailFromDb.get().getId().equals(savedPerson.getId())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Email já cadastrado");
         }
-
         Person person = PessoasMapper.INSTANCE.toPerson(personDTO);
         person.setId(savedPerson.getId());
-
-        if (person.getPhones() != null) {
-            for (Phone phone : person.getPhones()) {
-                if (phone.getTypePhone() != null && phone.getTypePhone().getDescription() != null) {
-                    // Garantir que o TypePhone seja atualizado com a descrição
-                    TypePhone typePhone = new TypePhone();
-                    typePhone.setDescription(phone.getTypePhone().getDescription());
-                    phone.setTypePhone(typePhone); // Atribui o TypePhone corretamente
-                }
-                phone.setPerson(person); // Associar o telefone à pessoa
-            }
+        List<Phone> phones = new ArrayList<>();
+        for (PhoneDTO phoneRequest : personDTO.getPhones()) {
+            Phone phone = PhoneMapper.INSTANCE.toPhone(phoneRequest);
+            TypePhone typePhone = findOrCreateTypePhone(phoneRequest.getTypePhoneDTO().getDescription());
+            phone.setTypePhone(typePhone);
+            phone.setPerson(person);
+            phones.add(phone);
         }
-        pessoasRepository.save(person); // Salvar a pessoa com os telefones atualizados
+        person.setPhones(phones);
+        pessoasRepository.save(person);
     }
 
+    private TypePhone findOrCreateTypePhone(String description) {
+        Optional<TypePhone> existingTypePhone = typePhoneRepository.findByDescription(description);
 
+        return existingTypePhone.orElseGet(() -> {
+            TypePhone newTypePhone = new TypePhone();
+            newTypePhone.setDescription(description);
+            return typePhoneRepository.save(newTypePhone);
+        });
+    }
 }
