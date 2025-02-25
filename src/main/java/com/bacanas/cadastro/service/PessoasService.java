@@ -36,10 +36,6 @@ public class PessoasService {
         return pessoasRepository.findByName(name);
     }
 
-    public Person findByIdOrThrowBadException(Long id) {
-        return pessoasRepository.findById(id).orElseThrow(() -> new BadRequestException("User not found"));
-    }
-
     @Transactional
     public void save(PessoasPostRequestsBody pessoasPostRequestsBody, JwtAuthenticationToken token) {
         var user = usersService.findByIdOrThrowBadException(Long.parseLong(token.getName()));
@@ -58,14 +54,27 @@ public class PessoasService {
         pessoasRepository.save(person);
     }
 
-    @Transactional
-    public void delete(Long id) {
-        pessoasRepository.delete(findByIdOrThrowBadException(id));
+    public List<Person> findByEmailsOrThrowBadException(List<String> emails) {
+        List<Person> pessoas = pessoasRepository.findByEmailIn(emails);
+        if (pessoas.size() != emails.size()) {
+            throw new BadRequestException("Some users not found");
+        }
+        return pessoas;
+    }
+
+    public Person findByEmailOrThrowBadException(String email) {
+        return pessoasRepository.findByEmail(email).orElseThrow(() -> new BadRequestException("User not found"));
     }
 
     @Transactional
-    public void replace(PersonDTO personDTO, Long id) {
-        Person savedPerson = findByIdOrThrowBadException(id);
+    public void delete(List<String> emails) {
+        List<Person> pessoas = findByEmailsOrThrowBadException(emails);
+        pessoasRepository.deleteAll(pessoas);
+    }
+
+    @Transactional
+    public void replace(PersonDTO personDTO) {
+        Person savedPerson = findByEmailOrThrowBadException(personDTO.getEmail());
         Person person = PessoasMapper.INSTANCE.toPerson(personDTO);
         person.setId(savedPerson.getId());
         if (person.getPhones() != null) {

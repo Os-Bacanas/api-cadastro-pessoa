@@ -36,15 +36,15 @@ public class PessoasController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @DeleteMapping(path = "/{id}")
-    public ResponseEntity<Void> delete(@PathVariable long id) {
-        pessoasService.delete(id);
+    @DeleteMapping("/deletar-emails")
+    public ResponseEntity<Void> delete(@RequestBody List<String> emails) {
+        pessoasService.delete(emails);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @PutMapping("{id}")
-    public ResponseEntity<Void> replace(@RequestBody PersonDTO personDTO, @PathVariable long id) {
-        pessoasService.replace(personDTO, id);
+    @PutMapping
+    public ResponseEntity<Void> replace(@RequestBody PersonDTO personDTO) {
+        pessoasService.replace(personDTO);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
