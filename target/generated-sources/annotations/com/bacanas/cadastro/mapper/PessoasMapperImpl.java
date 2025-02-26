@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-02-25T17:07:07-0300",
+    date = "2025-02-26T18:43:09-0300",
     comments = "version: 1.6.3, compiler: javac, environment: Java 23.0.2 (Oracle Corporation)"
 )
 @Component
@@ -65,6 +65,20 @@ public class PessoasMapperImpl extends PessoasMapper {
         person.setPhones( phoneDTOListToPhoneList( personDTO.getPhones() ) );
 
         return person;
+    }
+
+    @Override
+    public List<PersonDTO> toPersonDTOList(List<Person> byUserId) {
+        if ( byUserId == null ) {
+            return null;
+        }
+
+        List<PersonDTO> list = new ArrayList<PersonDTO>( byUserId.size() );
+        for ( Person person : byUserId ) {
+            list.add( toPersonDTO( person ) );
+        }
+
+        return list;
     }
 
     protected List<PhoneDTO> phoneListToPhoneDTOList(List<Phone> list) {

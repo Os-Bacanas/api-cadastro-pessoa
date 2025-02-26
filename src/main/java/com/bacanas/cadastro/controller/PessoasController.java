@@ -19,8 +19,8 @@ public class PessoasController {
     }
 
     @GetMapping
-    public ResponseEntity<List<PersonDTO>> listAll() {
-        return ResponseEntity.ok(pessoasService.listAll());
+    public ResponseEntity<List<PersonDTO>> listAll(JwtAuthenticationToken token) {
+        return ResponseEntity.ok(pessoasService.listByUser(token));
     }
 
     @PostMapping

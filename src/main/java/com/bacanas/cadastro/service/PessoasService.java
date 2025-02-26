@@ -3,11 +3,11 @@ package com.bacanas.cadastro.service;
 import com.bacanas.cadastro.domain.Person;
 import com.bacanas.cadastro.domain.Phone;
 import com.bacanas.cadastro.domain.TypePhone;
+import com.bacanas.cadastro.exceptions.BadRequestException;
 import com.bacanas.cadastro.exceptions.ConflictException;
 import com.bacanas.cadastro.exceptions.NotFoundException;
 import com.bacanas.cadastro.mapper.PessoasMapper;
 import com.bacanas.cadastro.mapper.PhoneMapper;
-import com.bacanas.cadastro.mapper.TypePhoneMapper;
 import com.bacanas.cadastro.repository.PessoasRepository;
 import com.bacanas.cadastro.repository.TypePhoneRepository;
 import com.bacanas.cadastro.requests.PersonDTO;
@@ -32,30 +32,18 @@ public class PessoasService {
         this.typePhoneRepository = typePhoneRepository;
     }
 
-    public List<PersonDTO> listAll() {
-        List<Person> people = pessoasRepository.findAll();
-        List<PersonDTO> personDTOList = new ArrayList<>();
-        for (Person person : people) {
-            personDTOList.add(PessoasMapper.INSTANCE.toPersonDTO(person));
-        }
-        return personDTOList;
+    public List<PersonDTO> listByUser(JwtAuthenticationToken token) {
+        return PessoasMapper.INSTANCE.toPersonDTOList(pessoasRepository.findByUserId(Long.parseLong(token.getName())));
     }
 
     @Transactional
     public void save(PersonDTO personDTO, JwtAuthenticationToken token) {
         var user = usersService.findByIdOrThrowBadException(Long.parseLong(token.getName()));
+        cleanAndValidatePersonData(personDTO);
         findByEmail(personDTO.getEmail());
         Person person = PessoasMapper.INSTANCE.toPerson(personDTO);
         person.setUser(user);
-        List<Phone> phones = new ArrayList<>();
-        for (PhoneDTO phoneRequest : personDTO.getPhones()) {
-            Phone phone = PhoneMapper.INSTANCE.toPhone(phoneRequest);
-            TypePhone typePhone = TypePhoneMapper.INSTANCE.toTypePhone(phoneRequest.getTypePhoneDTO().getDescription());
-            phone.setTypePhone(typePhone);
-            phone.setPerson(person);
-            phones.add(phone);
-        }
-        person.setPhones(phones);
+        person.setPhones(mapPhones(personDTO.getPhones(), person));
         pessoasRepository.save(person);
     }
 
@@ -69,18 +57,23 @@ public class PessoasService {
     public void replace(PersonDTO personDTO) {
         Person savedPerson = findByIdOrThrowNotFoundException(personDTO.getId());
         checkEmailUnique(personDTO.getEmail(), savedPerson.getId());
+        cleanAndValidatePersonData(personDTO);
         Person person = PessoasMapper.INSTANCE.toPerson(personDTO);
         person.setId(savedPerson.getId());
+        person.setUser(savedPerson.getUser());
+        person.setPhones(mapPhones(personDTO.getPhones(), person));
+        pessoasRepository.save(person);
+    }
+
+    private List<Phone> mapPhones(List<PhoneDTO> phoneDTOs, Person person) {
         List<Phone> phones = new ArrayList<>();
-        for (PhoneDTO phoneRequest : personDTO.getPhones()) {
-            Phone phone = PhoneMapper.INSTANCE.toPhone(phoneRequest);
-            TypePhone typePhone = findOrCreateTypePhone(phoneRequest.getTypePhoneDTO().getDescription());
-            phone.setTypePhone(typePhone);
+        for (PhoneDTO phoneDTO : phoneDTOs) {
+            Phone phone = PhoneMapper.INSTANCE.toPhone(phoneDTO);
+            phone.setTypePhone(findOrCreateTypePhone(phoneDTO.getTypePhoneDTO().getDescription()));
             phone.setPerson(person);
             phones.add(phone);
         }
-        person.setPhones(phones);
-        pessoasRepository.save(person);
+        return phones;
     }
 
     private void checkEmailUnique(String email, Long currentPersonId) {
@@ -98,17 +91,12 @@ public class PessoasService {
     }
 
     private TypePhone findOrCreateTypePhone(String description) {
-        Optional<TypePhone> existingTypePhone = typePhoneRepository.findByDescription(description);
-        return existingTypePhone.orElseGet(() -> {
-            TypePhone newTypePhone = new TypePhone();
-            newTypePhone.setDescription(description);
-            return typePhoneRepository.save(newTypePhone);
-        });
+        return typePhoneRepository.findByDescription(description)
+                .orElseGet(() -> typePhoneRepository.save(new TypePhone(description)));
     }
 
     private Person findByIdOrThrowNotFoundException(Long id) {
-        return pessoasRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Person not found"));
+        return pessoasRepository.findById(id).orElseThrow(() -> new NotFoundException("Person not found"));
     }
 
     private List<Person> findByEmailsOrThrowNotFoundException(List<String> emails) {
@@ -117,5 +105,21 @@ public class PessoasService {
             throw new NotFoundException("Some people not found");
         }
         return pessoas;
+    }
+
+    private void cleanAndValidatePersonData(PersonDTO personDTO) {
+        personDTO.setCpf(removeSpecialCharacters(personDTO.getCpf()));
+        personDTO.setEmail(personDTO.getEmail().trim());
+        personDTO.setName(personDTO.getName().trim());
+        if (personDTO.getCpf().length() != 11) {
+            throw new BadRequestException("Invalid CPF format");
+        }
+        if (personDTO.getEmail().contains("@")) {
+            throw new BadRequestException("Invalid email format");
+        }
+    }
+
+    private String removeSpecialCharacters(String input) {
+        return input != null ? input.replaceAll("[^0-9]", "") : input;
     }
 }

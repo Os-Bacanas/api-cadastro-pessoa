@@ -2,6 +2,7 @@ package com.bacanas.cadastro.service;
 
 import com.bacanas.cadastro.domain.User;
 import com.bacanas.cadastro.exceptions.BadCredentialsException;
+import com.bacanas.cadastro.exceptions.BadRequestException;
 import com.bacanas.cadastro.exceptions.ConflictException;
 import com.bacanas.cadastro.exceptions.NotFoundException;
 import com.bacanas.cadastro.mapper.UsersMapper;
@@ -39,18 +40,16 @@ public class UsersService {
 
     @Transactional
     public void save(UsersPostRequestsBody usersPostRequestsBody) {
-        var userFormDb = usersRepository.findByEmail(usersPostRequestsBody.getEmail());
-        if (userFormDb.isEmpty()) {
-            var user = new User();
-            user.setName((usersPostRequestsBody.getName()));
-            user.setEmail(usersPostRequestsBody.getEmail());
-            user.setCpf(usersPostRequestsBody.getCpf());
-            user.setPassword(passwordEncoder.encode(usersPostRequestsBody.getSenha()));
-            usersRepository.save(user);
-        } else {
+        cleanAndValidatePersonData(usersPostRequestsBody);
+        if (usersRepository.findByEmail(usersPostRequestsBody.getEmail()).isPresent()) {
             throw new ConflictException("Email already registered");
         }
-
+        var user = new User();
+        user.setName((usersPostRequestsBody.getName()));
+        user.setEmail(usersPostRequestsBody.getEmail());
+        user.setCpf(usersPostRequestsBody.getCpf());
+        user.setPassword(passwordEncoder.encode(usersPostRequestsBody.getSenha()));
+        usersRepository.save(user);
     }
 
     @Transactional
@@ -60,6 +59,7 @@ public class UsersService {
 
     @Transactional
     public LoginResponse replace(UsersPutRequestsBody usersPutRequestsBody) {
+        cleanAndValidatePersonData(usersPutRequestsBody);
         User savedUserById = findByIdOrThrowBadException(usersPutRequestsBody.getId());
         Optional<User> userByEmailFromDb = usersRepository.findByEmail(usersPutRequestsBody.getEmail());
         if (userByEmailFromDb.isPresent() && !userByEmailFromDb.get().getId().equals(savedUserById.getId())) {
@@ -74,7 +74,7 @@ public class UsersService {
             user.setPassword(passwordEncoder.encode(usersPutRequestsBody.getPassword()));
         }
         usersRepository.save(user);
-        return codeLogin(user);
+        return generateLoginResponse(user);
     }
 
     public LoginResponse login(LoginRequest loginRequest) {
@@ -82,10 +82,10 @@ public class UsersService {
         if (!user.isLoginCorrect(loginRequest, passwordEncoder)) {
             throw new BadCredentialsException("Email or password is incorrect");
         }
-        return codeLogin(user);
+        return generateLoginResponse(user);
     }
 
-    private LoginResponse codeLogin(User user) {
+    private LoginResponse generateLoginResponse(User user) {
         var now = Instant.now();
         var expiresIn = 86400L;
         var claims = JwtClaimsSet.builder()
@@ -103,6 +103,36 @@ public class UsersService {
 
     private User findByEmail(String email) {
         return usersRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("User not found"));
+    }
+
+    private void cleanAndValidatePersonData(Object userRequestBody) {
+        if (userRequestBody instanceof UsersPostRequestsBody body) {
+            body.setCpf(removeSpecialCharacters(body.getCpf()));
+            body.setEmail(body.getEmail().trim());
+            body.setName(body.getName().trim());
+            validateCpfAndEmail(body.getCpf(), body.getEmail());
+        } else if (userRequestBody instanceof UsersPutRequestsBody body) {
+            body.setCpf(removeSpecialCharacters(body.getCpf()));
+            body.setEmail(body.getEmail().trim());
+            body.setName(body.getName().trim());
+            validateCpfAndEmail(body.getCpf(), body.getEmail());
+        }
+    }
+
+    private void validateCpfAndEmail(String cpf, String email) {
+        if (cpf.length() != 11 || !cpf.matches("[0-9]+")) {
+            throw new BadRequestException("Invalid CPF format");
+        }
+        if (!email.contains("@")) {
+            throw new BadRequestException("Invalid email format");
+        }
+    }
+
+    private String removeSpecialCharacters(String input) {
+        if (input != null) {
+            return input.replaceAll("[^0-9]", "");
+        }
+        return input;
     }
 
     protected User findByIdOrThrowBadException(Long id) {

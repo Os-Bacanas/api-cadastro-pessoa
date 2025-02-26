@@ -11,6 +11,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
 import java.util.Optional;
 
 @Mapper(componentModel = "spring", uses = {TypePhoneRepository.class})
@@ -25,6 +26,7 @@ public abstract class PessoasMapper {
     @Mapping(target = "typePhoneDTO", source = "typePhone")
     public abstract PhoneDTO toPhoneDTO(Phone phone);
     public abstract Person toPerson(PersonDTO personDTO);
+    public abstract List<PersonDTO> toPersonDTOList(List<Person> byUserId);
 
     public TypePhone map(String description) {
         TypePhone typePhone = new TypePhone();
@@ -40,4 +42,5 @@ public abstract class PessoasMapper {
             return newTypePhone;
         });
     }
+
 }
