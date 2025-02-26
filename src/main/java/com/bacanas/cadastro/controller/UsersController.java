@@ -1,6 +1,7 @@
 package com.bacanas.cadastro.controller;
 
 import com.bacanas.cadastro.domain.User;
+import com.bacanas.cadastro.requests.LoginResponse;
 import com.bacanas.cadastro.requests.UsersPostRequestsBody;
 import com.bacanas.cadastro.requests.UsersPutRequestsBody;
 import com.bacanas.cadastro.service.UsersService;
@@ -37,8 +38,8 @@ public class UsersController {
     }
 
     @PutMapping
-    public ResponseEntity<Void> replace(@RequestBody UsersPutRequestsBody usersPutRequestsBody) {
-        usersService.replace(usersPutRequestsBody);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    public ResponseEntity<LoginResponse> replace(@RequestBody UsersPutRequestsBody usersPutRequestsBody) {
+        LoginResponse response = usersService.replace(usersPutRequestsBody);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

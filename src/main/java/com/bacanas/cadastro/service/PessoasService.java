@@ -3,7 +3,8 @@ package com.bacanas.cadastro.service;
 import com.bacanas.cadastro.domain.Person;
 import com.bacanas.cadastro.domain.Phone;
 import com.bacanas.cadastro.domain.TypePhone;
-import com.bacanas.cadastro.exceptions.BadRequestException;
+import com.bacanas.cadastro.exceptions.ConflictException;
+import com.bacanas.cadastro.exceptions.NotFoundException;
 import com.bacanas.cadastro.mapper.PessoasMapper;
 import com.bacanas.cadastro.mapper.PhoneMapper;
 import com.bacanas.cadastro.mapper.TypePhoneMapper;
@@ -12,10 +13,8 @@ import com.bacanas.cadastro.repository.TypePhoneRepository;
 import com.bacanas.cadastro.requests.PersonDTO;
 import com.bacanas.cadastro.requests.PhoneDTO;
 import jakarta.transaction.Transactional;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,13 +61,13 @@ public class PessoasService {
 
     @Transactional
     public void delete(List<String> emails) {
-        List<Person> pessoas = findByEmailsOrThrowBadException(emails);
+        List<Person> pessoas = findByEmailsOrThrowNotFoundException(emails);
         pessoasRepository.deleteAll(pessoas);
     }
 
     @Transactional
     public void replace(PersonDTO personDTO) {
-        Person savedPerson = findByIdOrThrowBadException(personDTO.getId());
+        Person savedPerson = findByIdOrThrowNotFoundException(personDTO.getId());
         checkEmailUnique(personDTO.getEmail(), savedPerson.getId());
         Person person = PessoasMapper.INSTANCE.toPerson(personDTO);
         person.setId(savedPerson.getId());
@@ -87,14 +86,14 @@ public class PessoasService {
     private void checkEmailUnique(String email, Long currentPersonId) {
         Optional<Person> personFromDb = pessoasRepository.findByEmail(email);
         if (personFromDb.isPresent() && !personFromDb.get().getId().equals(currentPersonId)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email já cadastrado");
+            throw new ConflictException("Email already registered");
         }
     }
 
     private void findByEmail(String email) {
         Optional<Person> personFromDb = pessoasRepository.findByEmail(email);
         if (personFromDb.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email ja cadastrado");
+            throw new ConflictException("Email already registered");
         }
     }
 
@@ -107,14 +106,15 @@ public class PessoasService {
         });
     }
 
-    private Person findByIdOrThrowBadException(Long id) {
-        return pessoasRepository.findById(id).orElseThrow(() -> new BadRequestException("Person not found"));
+    private Person findByIdOrThrowNotFoundException(Long id) {
+        return pessoasRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Person not found"));
     }
 
-    private List<Person> findByEmailsOrThrowBadException(List<String> emails) {
+    private List<Person> findByEmailsOrThrowNotFoundException(List<String> emails) {
         List<Person> pessoas = pessoasRepository.findByEmailIn(emails);
         if (pessoas.size() != emails.size()) {
-            throw new BadRequestException("Some people not found");
+            throw new NotFoundException("Some people not found");
         }
         return pessoas;
     }

@@ -1,7 +1,9 @@
 package com.bacanas.cadastro.service;
 
 import com.bacanas.cadastro.domain.User;
-import com.bacanas.cadastro.exceptions.BadRequestException;
+import com.bacanas.cadastro.exceptions.BadCredentialsException;
+import com.bacanas.cadastro.exceptions.ConflictException;
+import com.bacanas.cadastro.exceptions.NotFoundException;
 import com.bacanas.cadastro.mapper.UsersMapper;
 import com.bacanas.cadastro.repository.UsersRepository;
 import com.bacanas.cadastro.requests.LoginRequest;
@@ -9,14 +11,11 @@ import com.bacanas.cadastro.requests.LoginResponse;
 import com.bacanas.cadastro.requests.UsersPostRequestsBody;
 import com.bacanas.cadastro.requests.UsersPutRequestsBody;
 import jakarta.transaction.Transactional;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
 import java.util.List;
@@ -49,7 +48,7 @@ public class UsersService {
             user.setPassword(passwordEncoder.encode(usersPostRequestsBody.getSenha()));
             usersRepository.save(user);
         } else {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "E-mail já cadastrado");
+            throw new ConflictException("Email already registered");
         }
 
     }
@@ -60,11 +59,11 @@ public class UsersService {
     }
 
     @Transactional
-    public void replace(UsersPutRequestsBody usersPutRequestsBody) {
+    public LoginResponse replace(UsersPutRequestsBody usersPutRequestsBody) {
         User savedUserById = findByIdOrThrowBadException(usersPutRequestsBody.getId());
         Optional<User> userByEmailFromDb = usersRepository.findByEmail(usersPutRequestsBody.getEmail());
         if (userByEmailFromDb.isPresent() && !userByEmailFromDb.get().getId().equals(savedUserById.getId())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email já cadastrado");
+            throw new ConflictException("Email already registered");
         }
         User user = UsersMapper.INSTANCE.toUsers(usersPutRequestsBody);
         user.setId(savedUserById.getId());
@@ -75,6 +74,7 @@ public class UsersService {
             user.setPassword(passwordEncoder.encode(usersPutRequestsBody.getPassword()));
         }
         usersRepository.save(user);
+        return codeLogin(user);
     }
 
     public LoginResponse login(LoginRequest loginRequest) {
@@ -82,6 +82,10 @@ public class UsersService {
         if (!user.isLoginCorrect(loginRequest, passwordEncoder)) {
             throw new BadCredentialsException("Email or password is incorrect");
         }
+        return codeLogin(user);
+    }
+
+    private LoginResponse codeLogin(User user) {
         var now = Instant.now();
         var expiresIn = 86400L;
         var claims = JwtClaimsSet.builder()
@@ -98,10 +102,10 @@ public class UsersService {
     }
 
     private User findByEmail(String email) {
-        return usersRepository.findByEmail(email).orElseThrow(() -> new BadRequestException("User not found"));
+        return usersRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("User not found"));
     }
 
-    public User findByIdOrThrowBadException(Long id) {
-        return usersRepository.findById(id).orElseThrow(() -> new BadRequestException("User not found"));
+    protected User findByIdOrThrowBadException(Long id) {
+        return usersRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found"));
     }
 }
