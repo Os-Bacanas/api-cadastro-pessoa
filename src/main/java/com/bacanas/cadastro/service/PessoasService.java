@@ -43,7 +43,7 @@ public class PessoasService {
     public void save(PersonDTO personDTO, JwtAuthenticationToken token) {
         var user = usersService.findByIdOrThrowBadException(Long.parseLong(token.getName()));
         cleanAndValidatePersonData(personDTO);
-        checkEmailUnique(personDTO.getEmail(), null);  // Verifica se o e-mail é único
+        checkEmailUnique(personDTO.getEmail(), null);
         Person person = PessoasMapper.INSTANCE.toPerson(personDTO);
         person.setUser(user);
         person.setPhones(mapPhones(personDTO.getPhones(), person));
@@ -70,13 +70,10 @@ public class PessoasService {
         removeUnusedTypePhones(updatedPhones);
     }
 
-    // Verifique se o TypePhone ainda está sendo utilizado, se não, apague-o
     private void removeUnusedTypePhones(List<Phone> updatedPhones) {
         for (Phone phone : updatedPhones) {
             TypePhone typePhone = phone.getTypePhone();
             List<Phone> phonesLinkedToTypePhone = phoneRepository.findByTypePhone(typePhone);
-
-            // Se o TypePhone não estiver mais associado a nenhum Phone, deletamos
             if (phonesLinkedToTypePhone.isEmpty()) {
                 typePhoneRepository.delete(typePhone);
             }
@@ -86,27 +83,16 @@ public class PessoasService {
     private List<Phone> mapPhones(List<PhoneDTO> phoneDTOs, Person person) {
         List<Phone> phones = new ArrayList<>();
         for (PhoneDTO phoneDTO : phoneDTOs) {
-            // Criação do objeto Phone a partir do DTO
             Phone phone = PhoneMapper.INSTANCE.toPhone(phoneDTO);
-
-            // Encontrar ou criar o TypePhone com base na descrição
             TypePhone typePhone = findOrCreateTypePhone(phoneDTO.getTypePhoneDTO().getDescription());
-
-            // Verifique se o TypePhone realmente precisa ser alterado
             if (phone.getTypePhone() == null || !phone.getTypePhone().equals(typePhone)) {
-                // Apenas altere a associação do TypePhone se for necessário
                 phone.setTypePhone(typePhone);
             }
-
-            // Associe o Phone à Person
             phone.setPerson(person);
-
-            // Adicione o Phone à lista
             phones.add(phone);
         }
         return phones;
     }
-
 
     private void checkEmailUnique(String email, Long currentPersonId) {
         Optional<Person> personFromDb = pessoasRepository.findByEmail(email);
@@ -136,16 +122,12 @@ public class PessoasService {
         personDTO.setCpf(removeSpecialCharacters(personDTO.getCpf()));
         personDTO.setEmail(personDTO.getEmail().trim());
         personDTO.setName(personDTO.getName().trim());
-
         if (personDTO.getCpf().length() != 11 || !isValidCpf(personDTO.getCpf())) {
             throw new BadRequestException("Invalid CPF format");
         }
-
         if (personDTO.getEmail() == null || personDTO.getEmail().isEmpty()) {
             throw new BadRequestException("Email is required");
         }
-
-        // Validação do e-mail usando uma expressão regular robusta
         String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
         if (!personDTO.getEmail().matches(emailRegex)) {
             throw new BadRequestException("Invalid email format");
@@ -153,8 +135,6 @@ public class PessoasService {
     }
 
     private boolean isValidCpf(String cpf) {
-        // Lógica de validação de CPF (dígitos verificadores, etc.)
-        // Exemplo de verificação básica:
         return cpf.matches("[0-9]{11}");
     }
 
