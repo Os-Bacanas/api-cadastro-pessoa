@@ -11,7 +11,7 @@ public class TypePhone {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "typePhone")
+    @OneToMany(mappedBy = "typePhone", orphanRemoval = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     private List<Phone> phones;
     private String description;
 

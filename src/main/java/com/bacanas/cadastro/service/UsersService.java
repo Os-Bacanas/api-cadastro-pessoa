@@ -67,7 +67,7 @@ public class UsersService {
         }
         User user = UsersMapper.INSTANCE.toUsers(usersPutRequestsBody);
         user.setId(savedUserById.getId());
-
+        user.setPeople(savedUserById.getPeople());
         if (usersPutRequestsBody.getPassword() == null || usersPutRequestsBody.getPassword().isEmpty()) {
             user.setPassword(savedUserById.getPassword());
         } else {
@@ -76,6 +76,7 @@ public class UsersService {
         usersRepository.save(user);
         return generateLoginResponse(user);
     }
+
 
     public LoginResponse login(LoginRequest loginRequest) {
         var user = findByEmail(loginRequest.email());
@@ -123,10 +124,8 @@ public class UsersService {
         if (cpf.length() != 11 || !cpf.matches("[0-9]+")) {
             throw new BadRequestException("Invalid CPF format");
         }
-        // Validação do e-mail usando uma expressão regular mais robusta
         String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
         if (email == null || !email.matches(emailRegex)) {
-            System.out.println("verificcanod email");
             throw new BadRequestException("Invalid email format");
         }
     }

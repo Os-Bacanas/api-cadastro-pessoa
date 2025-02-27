@@ -18,7 +18,7 @@ public class User {
     private String email;
     private String cpf;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, orphanRemoval = true)
     @JsonIgnore
     private List<Person> people;
 

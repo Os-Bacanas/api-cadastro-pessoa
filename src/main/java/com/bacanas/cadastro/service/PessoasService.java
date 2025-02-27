@@ -9,6 +9,7 @@ import com.bacanas.cadastro.exceptions.NotFoundException;
 import com.bacanas.cadastro.mapper.PessoasMapper;
 import com.bacanas.cadastro.mapper.PhoneMapper;
 import com.bacanas.cadastro.repository.PessoasRepository;
+import com.bacanas.cadastro.repository.PhoneRepository;
 import com.bacanas.cadastro.repository.TypePhoneRepository;
 import com.bacanas.cadastro.requests.PersonDTO;
 import com.bacanas.cadastro.requests.PhoneDTO;
@@ -25,11 +26,13 @@ public class PessoasService {
     private final PessoasRepository pessoasRepository;
     private final UsersService usersService;
     private final TypePhoneRepository typePhoneRepository;
+    private final PhoneRepository phoneRepository;
 
-    public PessoasService(PessoasRepository pessoasRepository, UsersService usersService, TypePhoneRepository typePhoneRepository) {
+    public PessoasService(PessoasRepository pessoasRepository, UsersService usersService, TypePhoneRepository typePhoneRepository, PhoneRepository phoneRepository) {
         this.pessoasRepository = pessoasRepository;
         this.usersService = usersService;
         this.typePhoneRepository = typePhoneRepository;
+        this.phoneRepository = phoneRepository;
     }
 
     public List<PersonDTO> listByUser(JwtAuthenticationToken token) {
@@ -61,20 +64,49 @@ public class PessoasService {
         Person person = PessoasMapper.INSTANCE.toPerson(personDTO);
         person.setId(savedPerson.getId());
         person.setUser(savedPerson.getUser());
-        person.setPhones(mapPhones(personDTO.getPhones(), person));
+        List<Phone> updatedPhones = mapPhones(personDTO.getPhones(), person);
+        person.setPhones(updatedPhones);
         pessoasRepository.save(person);
+        removeUnusedTypePhones(updatedPhones);
+    }
+
+    // Verifique se o TypePhone ainda está sendo utilizado, se não, apague-o
+    private void removeUnusedTypePhones(List<Phone> updatedPhones) {
+        for (Phone phone : updatedPhones) {
+            TypePhone typePhone = phone.getTypePhone();
+            List<Phone> phonesLinkedToTypePhone = phoneRepository.findByTypePhone(typePhone);
+
+            // Se o TypePhone não estiver mais associado a nenhum Phone, deletamos
+            if (phonesLinkedToTypePhone.isEmpty()) {
+                typePhoneRepository.delete(typePhone);
+            }
+        }
     }
 
     private List<Phone> mapPhones(List<PhoneDTO> phoneDTOs, Person person) {
         List<Phone> phones = new ArrayList<>();
         for (PhoneDTO phoneDTO : phoneDTOs) {
+            // Criação do objeto Phone a partir do DTO
             Phone phone = PhoneMapper.INSTANCE.toPhone(phoneDTO);
-            phone.setTypePhone(findOrCreateTypePhone(phoneDTO.getTypePhoneDTO().getDescription()));
+
+            // Encontrar ou criar o TypePhone com base na descrição
+            TypePhone typePhone = findOrCreateTypePhone(phoneDTO.getTypePhoneDTO().getDescription());
+
+            // Verifique se o TypePhone realmente precisa ser alterado
+            if (phone.getTypePhone() == null || !phone.getTypePhone().equals(typePhone)) {
+                // Apenas altere a associação do TypePhone se for necessário
+                phone.setTypePhone(typePhone);
+            }
+
+            // Associe o Phone à Person
             phone.setPerson(person);
+
+            // Adicione o Phone à lista
             phones.add(phone);
         }
         return phones;
     }
+
 
     private void checkEmailUnique(String email, Long currentPersonId) {
         Optional<Person> personFromDb = pessoasRepository.findByEmail(email);
