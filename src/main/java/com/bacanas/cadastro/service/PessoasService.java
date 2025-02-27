@@ -40,7 +40,7 @@ public class PessoasService {
     public void save(PersonDTO personDTO, JwtAuthenticationToken token) {
         var user = usersService.findByIdOrThrowBadException(Long.parseLong(token.getName()));
         cleanAndValidatePersonData(personDTO);
-        findByEmail(personDTO.getEmail());
+        checkEmailUnique(personDTO.getEmail(), null);  // Verifica se o e-mail é único
         Person person = PessoasMapper.INSTANCE.toPerson(personDTO);
         person.setUser(user);
         person.setPhones(mapPhones(personDTO.getPhones(), person));
@@ -83,13 +83,6 @@ public class PessoasService {
         }
     }
 
-    private void findByEmail(String email) {
-        Optional<Person> personFromDb = pessoasRepository.findByEmail(email);
-        if (personFromDb.isPresent()) {
-            throw new ConflictException("Email already registered");
-        }
-    }
-
     private TypePhone findOrCreateTypePhone(String description) {
         return typePhoneRepository.findByDescription(description)
                 .orElseGet(() -> typePhoneRepository.save(new TypePhone(description)));
@@ -111,12 +104,26 @@ public class PessoasService {
         personDTO.setCpf(removeSpecialCharacters(personDTO.getCpf()));
         personDTO.setEmail(personDTO.getEmail().trim());
         personDTO.setName(personDTO.getName().trim());
-        if (personDTO.getCpf().length() != 11) {
+
+        if (personDTO.getCpf().length() != 11 || !isValidCpf(personDTO.getCpf())) {
             throw new BadRequestException("Invalid CPF format");
         }
-        if (personDTO.getEmail().contains("@")) {
+
+        if (personDTO.getEmail() == null || personDTO.getEmail().isEmpty()) {
+            throw new BadRequestException("Email is required");
+        }
+
+        // Validação do e-mail usando uma expressão regular robusta
+        String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+        if (!personDTO.getEmail().matches(emailRegex)) {
             throw new BadRequestException("Invalid email format");
         }
+    }
+
+    private boolean isValidCpf(String cpf) {
+        // Lógica de validação de CPF (dígitos verificadores, etc.)
+        // Exemplo de verificação básica:
+        return cpf.matches("[0-9]{11}");
     }
 
     private String removeSpecialCharacters(String input) {

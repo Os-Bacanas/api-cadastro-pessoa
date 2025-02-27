@@ -123,7 +123,10 @@ public class UsersService {
         if (cpf.length() != 11 || !cpf.matches("[0-9]+")) {
             throw new BadRequestException("Invalid CPF format");
         }
-        if (!email.contains("@")) {
+        // Validação do e-mail usando uma expressão regular mais robusta
+        String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+        if (email == null || !email.matches(emailRegex)) {
+            System.out.println("verificcanod email");
             throw new BadRequestException("Invalid email format");
         }
     }
