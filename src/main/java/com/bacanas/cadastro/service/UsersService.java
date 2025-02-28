@@ -1,7 +1,6 @@
 package com.bacanas.cadastro.service;
 
 import com.bacanas.cadastro.domain.User;
-import com.bacanas.cadastro.exceptions.BadCredentialsException;
 import com.bacanas.cadastro.exceptions.BadRequestException;
 import com.bacanas.cadastro.exceptions.ConflictException;
 import com.bacanas.cadastro.exceptions.NotFoundException;
@@ -12,6 +11,7 @@ import com.bacanas.cadastro.requests.LoginResponse;
 import com.bacanas.cadastro.requests.UsersPostRequestsBody;
 import com.bacanas.cadastro.requests.UsersPutRequestsBody;
 import jakarta.transaction.Transactional;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
