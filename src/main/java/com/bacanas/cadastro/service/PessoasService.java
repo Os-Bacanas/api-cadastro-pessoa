@@ -122,20 +122,34 @@ public class PessoasService {
         personDTO.setCpf(removeSpecialCharacters(personDTO.getCpf()));
         personDTO.setEmail(personDTO.getEmail().trim());
         personDTO.setName(personDTO.getName().trim());
-        if (personDTO.getCpf().length() != 11 || !isValidCpf(personDTO.getCpf())) {
+        validateCpf(personDTO.getCpf());
+        validateEmail(personDTO.getEmail());
+        personDTO.setPhones(cleanAndFormatPhoneNumbers(personDTO.getPhones()));
+    }
+
+    private void validateCpf(String cpf) {
+        if (cpf.length() != 11 || !cpf.matches("[0-9]{11}")) {
             throw new BadRequestException("Invalid CPF format");
         }
-        if (personDTO.getEmail() == null || personDTO.getEmail().isEmpty()) {
+    }
+
+    private void validateEmail(String email) {
+        if (email == null || email.isEmpty()) {
             throw new BadRequestException("Email is required");
         }
         String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
-        if (!personDTO.getEmail().matches(emailRegex)) {
+        if (!email.matches(emailRegex)) {
             throw new BadRequestException("Invalid email format");
         }
     }
 
-    private boolean isValidCpf(String cpf) {
-        return cpf.matches("[0-9]{11}");
+    private List<PhoneDTO> cleanAndFormatPhoneNumbers(List<PhoneDTO> phoneDTOs) {
+        for (PhoneDTO phoneDTO : phoneDTOs) {
+            if (phoneDTO.getNumber() != null) {
+                phoneDTO.setNumber(removeSpecialCharacters(phoneDTO.getNumber()));
+            }
+        }
+        return phoneDTOs;
     }
 
     private String removeSpecialCharacters(String input) {

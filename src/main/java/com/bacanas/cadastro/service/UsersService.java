@@ -77,7 +77,6 @@ public class UsersService {
         return generateLoginResponse(user);
     }
 
-
     public LoginResponse login(LoginRequest loginRequest) {
         var user = findByEmail(loginRequest.email());
         if (!user.isLoginCorrect(loginRequest, passwordEncoder)) {
