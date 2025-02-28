@@ -16,13 +16,12 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-
         if (authException instanceof BadCredentialsException) {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.getWriter().write("{\"message\": \"Email or password is incorrect\"}");
-        } else {
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            response.getWriter().write("{\"message\": \"Authentication failed\"}");
+            return;
         }
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        response.getWriter().write("{\"message\": \"Authentication failed\"}");
     }
 }

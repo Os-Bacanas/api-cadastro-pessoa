@@ -111,7 +111,8 @@ public class UsersService {
             body.setEmail(body.getEmail().trim());
             body.setName(body.getName().trim());
             validateCpfAndEmail(body.getCpf(), body.getEmail());
-        } else if (userRequestBody instanceof UsersPutRequestsBody body) {
+        }
+        if (userRequestBody instanceof UsersPutRequestsBody body) {
             body.setCpf(removeSpecialCharacters(body.getCpf()));
             body.setEmail(body.getEmail().trim());
             body.setName(body.getName().trim());
