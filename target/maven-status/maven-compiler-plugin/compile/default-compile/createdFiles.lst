@@ -1,6 +1,9 @@
+com\bacanas\cadastro\config\CustomAuthenticationEntryPoint.class
+com\bacanas\cadastro\repository\PhoneRepository.class
 com\bacanas\cadastro\domain\User.class
 com\bacanas\cadastro\repository\UsersRepository.class
 com\bacanas\cadastro\domain\TypePhone.class
+com\bacanas\cadastro\exceptions\NotFoundException.class
 com\bacanas\cadastro\config\SecurityConfig.class
 com\bacanas\cadastro\requests\UsersPutRequestsBody.class
 com\bacanas\cadastro\service\UsersService.class
@@ -21,10 +24,14 @@ com\bacanas\cadastro\mapper\PessoasMapper.class
 com\bacanas\cadastro\requests\LoginRequest.class
 com\bacanas\cadastro\requests\LoginResponse.class
 com\bacanas\cadastro\mapper\PessoasMapperImpl.class
+com\bacanas\cadastro\exceptions\GlobalExceptionHandler$ErrorMessage.class
+com\bacanas\cadastro\repository\TypePhoneRepository.class
 com\bacanas\cadastro\controller\UsersController.class
-com\bacanas\cadastro\requests\PessoasPostRequestsBody.class
+com\bacanas\cadastro\requests\TypePhoneDTO.class
 com\bacanas\cadastro\domain\Person.class
+com\bacanas\cadastro\exceptions\GlobalExceptionHandler.class
 com\bacanas\cadastro\mapper\TypePhoneMapperImpl.class
 com\bacanas\cadastro\service\PessoasService.class
+com\bacanas\cadastro\exceptions\ConflictException.class
 com\bacanas\cadastro\mapper\TypePhoneMapper.class
 com\bacanas\cadastro\exceptions\BadRequestException.class
