@@ -4,8 +4,8 @@ services:
     container_name: db
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: ZouTzdSdxLYaLFYKrWUZUramftMTFdQZ
-      MYSQL_DATABASE: railway
+      MYSQL_ROOT_PASSWORD: 123
+      MYSQL_DATABASE: os_bacanas
     ports:
       - "3307:3306"
     networks:
@@ -22,9 +22,9 @@ services:
       dockerfile: Dockerfile
     container_name: api-cadastro
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/railway
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/os_bacanas
       SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: ZouTzdSdxLYaLFYKrWUZUramftMTFdQZ
+      SPRING_DATASOURCE_PASSWORD: 123
     ports:
       - "8080:8080"
     depends_on:
