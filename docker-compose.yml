@@ -22,9 +22,9 @@ services:
       dockerfile: Dockerfile
     container_name: api-cadastro
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/os_bacanas
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/railway
       SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: 123
+      SPRING_DATASOURCE_PASSWORD: ZouTzdSdxLYaLFYKrWUZUramftMTFdQZ
     ports:
       - "8080:8080"
     depends_on:
