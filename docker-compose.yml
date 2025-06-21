@@ -4,8 +4,8 @@ services:
     container_name: db
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: 123
-      MYSQL_DATABASE: os_bacanas
+      MYSQL_ROOT_PASSWORD: ZouTzdSdxLYaLFYKrWUZUramftMTFdQZ
+      MYSQL_DATABASE: railway
     ports:
       - "3307:3306"
     networks:
